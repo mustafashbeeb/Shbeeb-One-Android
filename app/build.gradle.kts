@@ -24,8 +24,8 @@ android {
         applicationId = "com.shbeeb.ai"
         minSdk = 26
         targetSdk = 35
-        versionCode = 18
-        versionName = "0.11.0"
+        versionCode = 19
+        versionName = "0.12.0"
         ndk {
             abiFilters.add("arm64-v8a")
         }
@@ -91,6 +91,7 @@ dependencies {
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.10.1")
 

@@ -63,11 +63,11 @@ internal fun ProviderKeySettings(engine: ChatEngine, onChange: () -> Unit) {
         Text(
             if (stored) "مفتاح ${engine.title}: محفوظ ومشفّر على هذا الهاتف"
             else "مفتاح ${engine.title}: لم يُحفظ بعد",
-            color = Color(0xFFF7CB78)
+            color = OnePrimary
         )
         Text(
             "لأمانك، المفتاح المحفوظ لا يظهر مرة ثانية. يمكنك استبداله أو حذفه بأي وقت. تخزينه على الجهاز لا يضمن أن عندك رصيد API.",
-            color = Color(0xFFB7C8D8)
+            color = OneMuted
         )
         OutlinedTextField(
             value = draft,
@@ -123,6 +123,6 @@ internal fun ProviderKeySettings(engine: ChatEngine, onChange: () -> Unit) {
                 modifier = Modifier.weight(1f)
             ) { Text("حذف المحفوظ") }
         }
-        if (status.isNotBlank()) Text(status, color = Color(0xFFB7C8D8))
+        if (status.isNotBlank()) Text(status, color = OneMuted)
     }
 }

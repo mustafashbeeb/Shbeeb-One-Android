@@ -94,7 +94,7 @@ class Telemetry {
 
     /** Keep errors local; do not upload crash details to the upstream Firebase project. */
     recordError(error: Error, context?: string) {
-        if (__DEV__) console.error('[Local error]', context ?? '', error);
+        console.error('[Shbeeb One local error]', context ?? '', error);
     }
 
     async trackNativeModelLoad<T>(
@@ -123,4 +123,17 @@ class Telemetry {
 }
 
 const telemetry = new Telemetry();
+
+// Log fatal and non-fatal JS startup errors to Android logcat without sending telemetry.
+// Preserve React Native's original handler so its normal red-screen/crash behaviour remains intact.
+const errorUtils = (globalThis as any).ErrorUtils;
+if (errorUtils?.getGlobalHandler && errorUtils?.setGlobalHandler) {
+    const originalHandler = errorUtils.getGlobalHandler();
+    errorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
+        const detail = error instanceof Error ? error : new Error(String(error));
+        console.error('[Shbeeb One React Native global error]', isFatal ? 'fatal' : 'non-fatal', detail);
+        originalHandler?.(error, isFatal);
+    });
+}
+
 export default telemetry;

@@ -126,14 +126,14 @@ internal fun LocalImageGenerationControls(promptSource: String) {
         )
     }
 
-    Surface(color = Color(0xFF0D1B2A), shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+    Surface(color = OneSurface, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("توليد صور محلياً", color = Color(0xFF35D6FF), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("توليد صور محلياً", color = OnePrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Text(
                 "يعمل على الهاتف دون إرسال وصفك إلى خدمة صور. النموذج 1.57 GB، والدقة 512×512. السرعة والحرارة تعتمد على الجهاز؛ لم يُختبر الأداء بعد على OPPO Find X5. أفضل النتائج عادةً مع وصف إنجليزي لأن SD 1.5 أقدم وأضعف في فهم العربية.",
-                color = Color(0xFFB7C8D8), fontSize = 12.sp
+                color = OneMuted, fontSize = 12.sp
             )
-            Text("النموذج: $modelLabel", color = Color.White, fontSize = 13.sp)
+            Text("النموذج: $modelLabel", color = OneInk, fontSize = 13.sp)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(
                     onClick = { selectedModel.launch(arrayOf("application/octet-stream", "*/*")) },
@@ -147,7 +147,7 @@ internal fun LocalImageGenerationControls(promptSource: String) {
                 ) { Text("تنزيل 1.57 GB") }
             }
             if (downloading) {
-                Text("$progress% — يمكنك الإلغاء؛ سيحذف التطبيق الملف غير المكتمل إذا سمح موفر الملفات.", color = Color(0xFFB7C8D8), fontSize = 12.sp)
+                Text("$progress% — يمكنك الإلغاء؛ سيحذف التطبيق الملف غير المكتمل إذا سمح موفر الملفات.", color = OneMuted, fontSize = 12.sp)
                 OutlinedButton(onClick = { cancelDownload?.set(true) }, modifier = Modifier.fillMaxWidth()) { Text("إلغاء التنزيل") }
             }
             OutlinedTextField(
@@ -199,7 +199,7 @@ internal fun LocalImageGenerationControls(promptSource: String) {
                 modifier = Modifier.fillMaxWidth()
             ) { Text(if (generating) "جارٍ التوليد…" else "توليد صورة على الهاتف") }
             if (generating) {
-                Text("$progress% — المعالجة محلية وقد تستغرق وقتاً. أوقفها إذا ارتفعت حرارة الهاتف.", color = Color(0xFFB7C8D8), fontSize = 12.sp)
+                Text("$progress% — المعالجة محلية وقد تستغرق وقتاً. أوقفها إذا ارتفعت حرارة الهاتف.", color = OneMuted, fontSize = 12.sp)
                 OutlinedButton(onClick = { LocalDiffusionEngine.cancel() }, modifier = Modifier.fillMaxWidth()) { Text("إلغاء التوليد") }
             }
             image?.let { bitmap ->
@@ -214,7 +214,7 @@ internal fun LocalImageGenerationControls(promptSource: String) {
                     Text("حفظ الصورة PNG")
                 }
             }
-            if (status.isNotBlank()) Text(status, color = Color(0xFFB7C8D8), fontSize = 12.sp)
+            if (status.isNotBlank()) Text(status, color = OneMuted, fontSize = 12.sp)
         }
     }
 }

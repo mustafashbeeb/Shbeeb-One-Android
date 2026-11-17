@@ -44,16 +44,17 @@ internal fun LocalModelSettings(
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null && !busy) {
             busy = true
-            message = "جارٍ فحص إذن الملف وحجمه… لا يتم نسخ النموذج إلى التطبيق."
+            message = "جارٍ فحص الملف… عند أول تشغيل سيُنشأ داخل التطبيق ملف تشغيل خاص بامتداد .litertlm. سيبقى الملف الأصلي كما هو."
             Thread {
                 val result = runCatching {
                     val selected = LocalModelFiles.select(context, uri)
                     LocalOnDeviceEngine.reset()
+                    LocalModelFiles.pruneWorkingCopiesExceptSelected(context)
                     selected
                 }
                 handler.post {
                     result.onSuccess { selected ->
-                        message = "تم ربط ${selected.displayName} (${selected.sizeBytes / 1_048_576L} MB). سيقرأه LiteRT مباشرة من موقعه؛ لا تُنشأ نسخة ثانية. اختبر رداً محلياً قبل الاعتماد عليه."
+                        message = "تم ربط ${selected.displayName} (${selected.sizeBytes / 1_048_576L} MB). عند أول تشغيل سيُنسخ إلى مساحة Shbeeb One الخاصة، لذلك يلزم توفير مساحة إضافية تقارب حجم النموذج مع هامش أمان. يبقى ملف المكتبة الأصلي دون تغيير. اختبر رداً محلياً قبل الاعتماد عليه."
                         onInstalled()
                     }.onFailure {
                         message = it.message ?: "تعذّر استخدام الملف المحدد."
@@ -131,32 +132,32 @@ internal fun LocalModelSettings(
     }
 
     Surface(
-        color = Color(0xFF0D1B2A),
+        color = OneSurface,
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("محرك ذكاء داخل الهاتف — تجريبي", color = Color(0xFF35D6FF))
+            Text("محرك ذكاء داخل الهاتف — تجريبي", color = OnePrimary, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
             Text(
                 when {
                     modelInfo?.isShared == true ->
-                        "الملف المشترك: ${modelInfo.displayName} — ${modelInfo.sizeBytes / 1_048_576L} MB. يُفتح مباشرة من موقع المستخدم دون نسخه إلى مساحة التطبيق."
+                        "مصدر النموذج المشترك: ${modelInfo.displayName} — ${modelInfo.sizeBytes / 1_048_576L} MB. عند أول استخدام ينشئ التطبيق نسخة تشغيل خاصة لأن LiteRT-LM يحتاج مسار ملف بامتداد .litertlm. يلزم تقريباً حجم إضافي مماثل + 128 MB؛ لا يُحذف ولا يُعدّل المصدر المشترك."
                     modelInfo != null ->
                         "نموذج قديم: ${modelInfo.displayName} — ${modelInfo.sizeBytes / 1_048_576L} MB داخل مساحة التطبيق الخاصة؛ التطبيقات الأخرى لا تصل إليه."
                     else ->
-                        "لا يوجد نموذج محدد. اختر ملف .litertlm محفوظاً على الجهاز. لا ينسخ Shbeeb One الملف، ويجب أن يكون موفر الملفات محلياً وقابلاً للبحث."
+                        "لا يوجد نموذج محدد. اختر ملف .litertlm محفوظاً محلياً. سيُنسخ إلى مساحة التطبيق الخاصة عند أول تشغيل؛ يجب أن يكون موفر الملفات محلياً وقابلاً للبحث، وأن تتوفر مساحة إضافية بحجم النموذج تقريباً."
                 },
-                color = Color.White
+                color = OneInk
             )
             Text(
                 "التوافق مهم: هذا المحرك يقبل .litertlm فقط. نموذج محادثة GGUF يحتاج محرك llama.cpp، وGGUF الخاص بالصور ليس نموذج محادثة. يحتاج الملف إلى ترخيص مناسب؛ نجاح اختياره لا يضمن توافقه حتى تنجح محادثة تجريبية.",
-                color = Color(0xFFB7C8D8)
+                color = OneMuted
             )
             Text(
                 "لا يأتي نموذج داخل APK. التشغيل CPU فقط. وضع الرد السريع يحدد طول الإجابة ولا يزيد معرفة النموذج؛ النماذج الصغيرة قد تخطئ.",
-                color = Color(0xFFB7C8D8)
+                color = OneMuted
             )
-            Text("طول إجابة ذكاء الهاتف", color = Color(0xFF35D6FF))
+            Text("طول إجابة ذكاء الهاتف", color = OnePrimary)
             LocalResponseMode.values().forEach { mode ->
                 OutlinedButton(
                     onClick = { onResponseModeChanged(mode) },
@@ -192,7 +193,7 @@ internal fun LocalModelSettings(
             }) { Text("استعراض نماذج LiteRT المرخّصة") }
             Text(
                 "للتجربة، يعرض مجتمع LiteRT نماذج Gemma بصيغة .litertlm. اقرأ بطاقة النموذج وترخيصه ومتطلباته، ثم اختر الملف المحفوظ محلياً.",
-                color = Color(0xFFB7C8D8)
+                color = OneMuted
             )
             TextButton(onClick = {
                 runCatching {
@@ -204,7 +205,7 @@ internal fun LocalModelSettings(
                 onClick = { picker.launch(arrayOf("application/octet-stream", "*/*")) },
                 enabled = !busy,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(if (busy) "جارٍ الفحص…" else "اختيار ملف .litertlm من المكتبة المشتركة") }
+            ) { Text(if (busy) "جارٍ الفحص…" else "اختيار ملف .litertlm من الجهاز أو المكتبة المشتركة") }
             if (installed) {
                 OutlinedButton(
                     onClick = { confirmRemove = true },
@@ -219,7 +220,7 @@ internal fun LocalModelSettings(
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("حذف النسخة القديمة لتوفير مساحة") }
             }
-            if (message.isNotBlank()) Text(message, color = Color(0xFFB7C8D8))
+            if (message.isNotBlank()) Text(message, color = OneMuted)
         }
     }
 }

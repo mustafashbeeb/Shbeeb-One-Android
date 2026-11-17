@@ -3,11 +3,13 @@ package com.shbeeb.ai
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import com.google.ai.edge.litertlm.*
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.security.MessageDigest
 import kotlinx.coroutines.runBlocking
 
 /** Metadata for a model already stored in the user's shared document location. */
@@ -18,20 +20,16 @@ internal data class LocalModelInfo(
     val isShared: Boolean
 )
 
-/** A seekable model descriptor. The descriptor must outlive the native engine. */
+/** A private, seekable model copy with the extension required by LiteRT-LM. */
 internal data class OpenedLocalModel(
     val key: String,
-    val path: String,
-    val descriptor: ParcelFileDescriptor
-) : AutoCloseable {
-    override fun close() {
-        runCatching { descriptor.close() }
-    }
-}
+    val path: String
+)
 
 /**
- * User-owned model-file references. SAF grants access to the selected file; this
- * class does not copy, download, delete, or upload shared model files.
+ * User-owned model-file references. The selected SAF document remains untouched.
+ * LiteRT-LM infers format from the path extension and therefore needs an app-private
+ * .litertlm working copy; that copy is cached separately and removed when unlinked.
  */
 internal object LocalModelFiles {
     private const val PREFS = "shbeeb_shared_model_library"
@@ -39,6 +37,8 @@ internal object LocalModelFiles {
     private const val NAME_KEY = "litert_model_name"
     private const val SIZE_KEY = "litert_model_size"
     private const val LEGACY_MODEL_NAME = "shbeeb-local.litertlm"
+    private const val WORKING_MODEL_PREFIX = "shbeeb-litert-"
+    private const val COPY_RESERVE_BYTES = 128L * 1024L * 1024L
     private const val MAX_SIZE = 3_500_000_000L
     private const val MIN_SIZE = 100_000L
 
@@ -115,7 +115,7 @@ internal object LocalModelFiles {
         return if (hasLegacyModel(context)) legacy.absolutePath else null
     }
 
-    /** Open from SAF without making an app-private duplicate; keep the PFD alive. */
+    /** Create/reuse an app-private, correctly suffixed copy for LiteRT-LM. */
     internal fun openModel(context: Context): OpenedLocalModel {
         val uri = selectedUri(context)
         if (uri != null) {
@@ -123,22 +123,107 @@ internal object LocalModelFiles {
             require(name.endsWith(".litertlm", ignoreCase = true)) {
                 "الملف المرتبط لم يعد نموذج LiteRT صالح الامتداد."
             }
-            val descriptor = context.contentResolver.openFileDescriptor(uri, "r")
+            val size = context.contentResolver.openFileDescriptor(uri, "r")?.use { it.statSize }
                 ?: throw IOException("تعذّر فتح النموذج من المجلد المشترك. أعد اختيار الملف.")
-            if (descriptor.statSize !in MIN_SIZE..MAX_SIZE) {
-                descriptor.close()
+            if (size !in MIN_SIZE..MAX_SIZE) {
                 throw IOException("ملف النموذج غير متاح كملف محلي قابل للبحث. اختر نسخة محفوظة على الجهاز.")
             }
-            return OpenedLocalModel(uri.toString(), "/proc/self/fd/${descriptor.fd}", descriptor)
+            val destination = workingModelFile(context, uri)
+            if (!destination.isFile || destination.length() != size) {
+                if (destination.exists() && !destination.delete()) {
+                    throw IOException("تعذّر استبدال نسخة التشغيل القديمة. حرّر مساحة ثم أعد المحاولة.")
+                }
+                val available = context.noBackupFilesDir.usableSpace
+                if (available < size + COPY_RESERVE_BYTES) {
+                    val neededMb = (size + COPY_RESERVE_BYTES) / 1_048_576L
+                    val availableMb = available / 1_048_576L
+                    throw IOException("المساحة الداخلية غير كافية لنسخة تشغيل النموذج. يلزم نحو ${neededMb} MB ويتوفر ${availableMb} MB. سيبقى ملفك الأصلي دون تغيير.")
+                }
+                val input = context.contentResolver.openInputStream(uri)
+                    ?: throw IOException("تعذّر قراءة الملف المحدد. أعد اختياره من تطبيق الملفات.")
+                copyModelStream(input, destination, size, available)
+            }
+            removeStaleWorkingCopies(context, destination)
+            return OpenedLocalModel(uri.toString(), destination.absolutePath)
         }
 
         // Backward compatibility with an older app-private import, if one exists.
         val legacy = legacyModelFile(context)
         if (hasLegacyModel(context)) {
-            val descriptor = ParcelFileDescriptor.open(legacy, ParcelFileDescriptor.MODE_READ_ONLY)
-            return OpenedLocalModel(legacy.absolutePath, "/proc/self/fd/${descriptor.fd}", descriptor)
+            return OpenedLocalModel(legacy.absolutePath, legacy.absolutePath)
         }
         throw IOException("لم تحدد ملف نموذج محلي. اختر ملف .litertlm من المكتبة المشتركة أولاً.")
+    }
+
+    /** Streaming copy keeps memory use bounded, preserves the source, and publishes only complete files. */
+    internal fun copyModelStream(
+        source: InputStream,
+        destination: File,
+        expectedSize: Long,
+        availableBytes: Long
+    ): File {
+        require(expectedSize in MIN_SIZE..MAX_SIZE) { "حجم ملف النموذج خارج الحدود المدعومة." }
+        if (availableBytes < expectedSize + COPY_RESERVE_BYTES) {
+            throw IOException("المساحة الداخلية غير كافية لإنشاء نسخة تشغيل آمنة للنموذج.")
+        }
+        val parent = destination.parentFile ?: throw IOException("مسار نسخة النموذج غير صالح.")
+        if (!parent.exists() && !parent.mkdirs()) throw IOException("تعذّر إنشاء مجلد نسخة النموذج.")
+        val temporary = File(parent, destination.name + ".part")
+        temporary.delete()
+        var copied = 0L
+        try {
+            source.use { input ->
+                FileOutputStream(temporary).use { output ->
+                    val buffer = ByteArray(64 * 1024)
+                    while (true) {
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        copied += count
+                        if (copied > expectedSize || copied > MAX_SIZE) {
+                            throw IOException("حجم الملف المقروء أكبر من الحجم المعلن؛ أوقفنا النسخ لحماية التخزين.")
+                        }
+                        output.write(buffer, 0, count)
+                    }
+                    output.fd.sync()
+                }
+            }
+            if (copied != expectedSize || temporary.length() != expectedSize) {
+                throw IOException("النسخة غير مكتملة (${copied / 1_048_576L} MB من ${expectedSize / 1_048_576L} MB). أعد المحاولة؛ لم يتغير ملفك الأصلي.")
+            }
+            if (destination.exists() && !destination.delete()) {
+                throw IOException("تعذّر استبدال نسخة النموذج الداخلية.")
+            }
+            if (!temporary.renameTo(destination)) throw IOException("تعذّر اعتماد نسخة النموذج بعد اكتمالها.")
+            return destination
+        } catch (failure: Throwable) {
+            temporary.delete()
+            throw failure
+        }
+    }
+
+    private fun workingModelFile(context: Context, uri: Uri): File {
+        val digest = MessageDigest.getInstance("SHA-256")
+            .digest(uri.toString().toByteArray(Charsets.UTF_8))
+            .take(12)
+            .joinToString("") { "%02x".format(it.toInt() and 0xff) }
+        return File(context.noBackupFilesDir, "$WORKING_MODEL_PREFIX$digest.litertlm")
+    }
+
+    private fun removeStaleWorkingCopies(context: Context, keep: File) {
+        context.noBackupFilesDir.listFiles()
+            ?.filter { it.name.startsWith(WORKING_MODEL_PREFIX) && it.absolutePath != keep.absolutePath }
+            ?.forEach { runCatching { it.delete() } }
+    }
+
+    internal fun pruneWorkingCopiesExceptSelected(context: Context) {
+        val uri = selectedUri(context) ?: return
+        removeStaleWorkingCopies(context, workingModelFile(context, uri))
+    }
+
+    private fun deleteWorkingCopies(context: Context) {
+        context.noBackupFilesDir.listFiles()
+            ?.filter { it.name.startsWith(WORKING_MODEL_PREFIX) }
+            ?.forEach { runCatching { it.delete() } }
     }
 
     fun clearReference(context: Context) {
@@ -152,11 +237,14 @@ internal object LocalModelFiles {
                 )
             }
         }
+        deleteWorkingCopies(context)
     }
 
     fun deleteLegacyCopy(context: Context): Boolean {
         val legacy = legacyModelFile(context)
-        return !legacy.exists() || legacy.delete()
+        val deleted = !legacy.exists() || legacy.delete()
+        if (deleted) deleteWorkingCopies(context)
+        return deleted
     }
 
     private fun displayName(context: Context, uri: Uri): String {
@@ -173,7 +261,7 @@ internal object LocalModelFiles {
 }
 
 /**
- * Owns one LiteRT Engine/Conversation and the file descriptor used to load it.
+ * Owns one LiteRT Engine/Conversation and keeps its private model file on disk.
  * Calls run on a worker thread; this is not a background service.
  */
 internal object LocalOnDeviceEngine {
@@ -181,7 +269,6 @@ internal object LocalOnDeviceEngine {
     private var engine: Engine? = null
     private var conversation: Conversation? = null
     private var loadedKey: String? = null
-    private var modelDescriptor: ParcelFileDescriptor? = null
 
     fun reply(
         context: Context,
@@ -214,10 +301,8 @@ internal object LocalOnDeviceEngine {
                 engine = created
                 conversation = newConversation
                 loadedKey = modelKey
-                modelDescriptor = opened.descriptor
             } catch (failure: Throwable) {
                 runCatching { candidate?.close() }
-                opened.close()
                 throw failure
             }
         }
@@ -240,7 +325,5 @@ internal object LocalOnDeviceEngine {
         runCatching { engine?.close() }
         engine = null
         loadedKey = null
-        runCatching { modelDescriptor?.close() }
-        modelDescriptor = null
     }
 }
