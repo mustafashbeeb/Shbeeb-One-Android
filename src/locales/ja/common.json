@@ -65,7 +65,8 @@
     "title": "言語",
     "search_placeholder": "言語を検索",
     "no_results": "「{{query}}」に一致する言語がありません",
-    "changed": "言語が{{language}}に変更されました"
+    "changed": "言語が{{language}}に変更されました",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "匿名テレメトリを共有",
       "description_events": "AnythingLLMは「チャットが完了した」や「ツールが使用された」などの小数の匿名イベントを送信し、どの機能が重要であり、どこで問題が発生しているかを確認できます。",
       "description_privacy": "これはチャット、ドキュメント、プロンプト、またはアプリの使用方法に関する具体的な情報を含みません。アカウントはなく、あなたを特定するものは何もありません。",
-      "description_opt_out": "これをオンのままにすると、より良いアプリケーションの構築に役立ちます。いつでも無効にでき、それ以上何も送信されません。"
+      "description_opt_out": "これをオンのままにすると、より良いアプリケーションの構築に役立ちます。いつでも無効にでき、それ以上何も送信されません。",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "モデル選択",
@@ -170,7 +174,10 @@
       "llm_model": "LLMモデル",
       "provider_settings": "プロバイダー設定",
       "show_less": "少なく表示",
-      "view_more": "さらに表示"
+      "view_more": "さらに表示",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "ベースURL",
@@ -810,6 +817,10 @@
   },
   "models": {
     "recommended": "推奨",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "メモリに収まらない可能性があります",
       "tight_compact": "収まらない可能性があります",
@@ -1024,7 +1035,14 @@
     "storage_low": "ストレージが少ない! モデル{{modelSize}} > {{freeSpace}}空き",
     "storage_check_failed": "ストレージのチェックに失敗しました",
     "setup_failed_title": "ダウンロードセットアップ失敗",
-    "setup_failed_message": "HFモデルダウンロードのセットアップに失敗しました：{{error}}"
+    "setup_failed_message": "HFモデルダウンロードのセットアップに失敗しました：{{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

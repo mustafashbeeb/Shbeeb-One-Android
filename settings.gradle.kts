@@ -30,6 +30,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ShbeebAI"
+rootProject.name = "ShbeebOneAndroid"
 include(":app")
 includeBuild("node_modules/@react-native/gradle-plugin")

@@ -50,9 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.io.ByteArrayOutputStream
 
-private val ToolSurface = Color(0xFF0D1B2A)
-private val ToolText = Color(0xFFB7C8D8)
-private val ToolGold = Color(0xFF35D6FF)
+private val ToolSurface = OneSurface
+private val ToolText = OneMuted
+private val ToolGold = OnePrimary
 
 /** Tasks are created, marked and deleted explicitly; no silent automation. */
 @Composable
@@ -129,10 +129,10 @@ internal fun TasksScreen() {
                     Text(
                         task.title,
                         modifier = Modifier.weight(1f).padding(top = 12.dp),
-                        color = if (task.complete) ToolText.copy(alpha = .6f) else Color.White
+                        color = if (task.complete) ToolText.copy(alpha = .6f) else OneInk
                     )
                     TextButton(onClick = { deletePending = task.id }) {
-                        Text("حذف", color = Color(0xFFFFA99D))
+                        Text("حذف", color = OneError)
                     }
                 }
             }
@@ -197,7 +197,7 @@ internal fun FilesScreen() {
             Surface(color = ToolSurface, shape = RoundedCornerShape(16.dp)) {
                 Column(Modifier.padding(13.dp)) {
                     Text(name, color = ToolGold, fontWeight = FontWeight.Bold)
-                    Text(preview.take(6000), color = Color.White, fontSize = 13.sp)
+                    Text(preview.take(6000), color = OneInk, fontSize = 13.sp)
                     if (preview.length > 6000) {
                         Text("المعاينة الظاهرة مختصرة إلى 6000 حرف.", color = ToolText)
                     }
@@ -327,7 +327,7 @@ internal fun CreativeScreen(kind: String, hasOpenAiKey: Boolean, readOpenAiKey: 
             }
             OutlinedButton(onClick = {
                 val manager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                manager.setPrimaryClip(ClipData.newPlainText("SHBEEB AI prompt", result))
+                manager.setPrimaryClip(ClipData.newPlainText("SHBEEB ONE prompt", result))
                 copied = true
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(if (copied) "تم النسخ" else "نسخ البرومبت")
@@ -338,7 +338,8 @@ internal fun CreativeScreen(kind: String, hasOpenAiKey: Boolean, readOpenAiKey: 
         }
         if (!video && kind == "الصور") {
             OfflineImageEditor()
-            Text("توليد صورة حقيقية (اختياري)", color = ToolGold,
+            LocalImageGenerationControls(promptSource = if (result.isBlank()) idea else result)
+            Text("توليد سحابي اختياري عبر OpenAI", color = ToolGold,
                 fontWeight = FontWeight.Bold, fontSize = 17.sp)
             if (!hasOpenAiKey) {
                 Text("أدخل مفتاح OpenAI API من إعدادات التطبيق لتفعيل التوليد السحابي.",
@@ -365,7 +366,7 @@ internal fun CreativeScreen(kind: String, hasOpenAiKey: Boolean, readOpenAiKey: 
                     contentScale = ContentScale.Fit
                 )
                 Button(
-                    onClick = { saveImage.launch("shbeeb-image.png") },
+                    onClick = { saveImage.launch("shbeeb-one-image.png") },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("حفظ الصورة PNG على الهاتف") }
             }

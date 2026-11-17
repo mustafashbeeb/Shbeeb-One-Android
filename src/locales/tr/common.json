@@ -65,7 +65,8 @@
     "title": "Dil",
     "search_placeholder": "Dilleri ara",
     "no_results": "\"{{query}}\" ile eşleşen dil yok",
-    "changed": "Dil {{language}} olarak değiştirildi"
+    "changed": "Dil {{language}} olarak değiştirildi",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Anonim telemetri paylaş",
       "description_events": "AnythingLLM, \"bir sohbet tamamlandı\" veya \"bir araç kullanıldı\" gibi az sayıda anonim etkinlik gönderir, böylece hangi özelliklerin önemli olduğunu ve nerede bir sorun olduğunu görebiliriz.",
       "description_privacy": "Bu hiçbir zaman sohbetlerinizi, belgelerinizi, istemlerinizi veya uygulamayı nasıl kullandığınız hakkında herhangi bir özel şey içermez. Hiçbir hesap yok ve sizi tanımlayan hiçbir şey yok.",
-      "description_opt_out": "Bunu açık tutmak daha iyi bir uygulama oluşturmamıza yardımcı olur. İstediğiniz zaman kapatabilirsiniz ve başka hiçbir şey gönderilmeyecektir."
+      "description_opt_out": "Bunu açık tutmak daha iyi bir uygulama oluşturmamıza yardımcı olur. İstediğiniz zaman kapatabilirsiniz ve başka hiçbir şey gönderilmeyecektir.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Model Seçimi",
@@ -170,7 +174,10 @@
       "llm_model": "LLM Modeli",
       "provider_settings": "Sağlayıcı Ayarları",
       "show_less": "Daha Az Göster",
-      "view_more": "Daha Fazla Görüntüle"
+      "view_more": "Daha Fazla Görüntüle",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "Temel URL",
@@ -844,6 +851,10 @@
   },
   "models": {
     "recommended": "Önerilen",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Bellek kapasitesine sığmayabilir",
       "tight_compact": "Uygun olmayabilir",
@@ -1065,7 +1076,14 @@
     "storage_low": "Depolama alanı az! Model {{modelSize}} > {{freeSpace}} için yer var",
     "storage_check_failed": "Depolama alanı kontrol edilemedi",
     "setup_failed_title": "Kurulum başarısız oldu",
-    "setup_failed_message": "HF model indirme işlemi başarısız: {{error}}"
+    "setup_failed_message": "HF model indirme işlemi başarısız: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

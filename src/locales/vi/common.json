@@ -65,7 +65,8 @@
     "title": "Ngôn ngữ",
     "search_placeholder": "Tìm kiếm ngôn ngữ",
     "no_results": "Không có ngôn ngữ nào khớp với \"{{query}}\"",
-    "changed": "Ngôn ngữ đã thay đổi thành {{language}}"
+    "changed": "Ngôn ngữ đã thay đổi thành {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Chia sẻ dữ liệu viễn cảm ẩn danh",
       "description_events": "AnythingLLM gửi một số lượng nhỏ các sự kiện ẩn danh, chẳng hạn như \"một trò chuyện đã hoàn thành\" hoặc \"một công cụ được sử dụng\", để chúng ta có thể thấy tính năng nào quan trọng và nơi có sự cố.",
       "description_privacy": "Điều này không bao giờ bao gồm các trò chuyện, tài liệu, lời nhắc hoặc bất cứ điều gì cụ thể về cách bạn sử dụng ứng dụng của bạn. Không có tài khoản và không có gì xác định bạn.",
-      "description_opt_out": "Để lại điều này giúp chúng tôi xây dựng một ứng dụng tốt hơn. Bạn có thể tắt nó bất cứ lúc nào và sẽ không có gì khác được gửi."
+      "description_opt_out": "Để lại điều này giúp chúng tôi xây dựng một ứng dụng tốt hơn. Bạn có thể tắt nó bất cứ lúc nào và sẽ không có gì khác được gửi.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Lựa chọn mô hình",
@@ -170,7 +174,10 @@
       "llm_model": "Mô hình LLM",
       "provider_settings": "Cài đặt nhà cung cấp",
       "show_less": "Hiển thị ít hơn",
-      "view_more": "Xem thêm"
+      "view_more": "Xem thêm",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "URL cơ sở",
@@ -810,6 +817,10 @@
   },
   "models": {
     "recommended": "Được đề xuất",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Có thể không vừa với bộ nhớ",
       "tight_compact": "Có thể không vừa",
@@ -1024,7 +1035,14 @@
     "storage_low": "Lưu trữ thấp! Mô hình {{modelSize}} > {{freeSpace}} miễn phí",
     "storage_check_failed": "Không thể kiểm tra lưu trữ",
     "setup_failed_title": "Cài đặt tải xuống không thành công",
-    "setup_failed_message": "Không thể thiết lập tải xuống mô hình HF: {{error}}"
+    "setup_failed_message": "Không thể thiết lập tải xuống mô hình HF: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

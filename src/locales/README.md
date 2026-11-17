@@ -20,7 +20,7 @@ scripts/translations/ the yarn translations:* tooling
 2. Once the user picks a language in **Settings > Language** it is saved and used from then on.
 3. Any key that is `null`, empty or missing in a language shows the English string.
 
-Right-to-left languages (Arabic, Hebrew, Farsi) are not supported yet - the layouts are not mirrored.
+Arabic is bundled as a translated locale. Selecting Arabic enables React Native RTL; Android applies the forced layout direction after the app is restarted. The Arabic dictionary and mirrored layouts still require device review, especially screens with fixed left/right positioning. Hebrew and Farsi are not supported yet.
 
 ## Scripts
 

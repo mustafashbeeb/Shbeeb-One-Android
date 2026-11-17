@@ -65,7 +65,8 @@
     "title": "Bahasa",
     "search_placeholder": "Cari bahasa",
     "no_results": "Tidak ada bahasa yang cocok \"{{query}}\"",
-    "changed": "Bahasa diubah ke {{language}}"
+    "changed": "Bahasa diubah ke {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Bagikan telemetri anonim",
       "description_events": "AnythingLLM mengirim sejumlah kecil acara anonim, seperti \"obrolan selesai\" atau \"alat digunakan\", sehingga kami dapat melihat fitur mana yang penting dan di mana hal-hal rusak.",
       "description_privacy": "Ini tidak pernah mencakup obrolan, dokumen, prompt, atau apa pun yang spesifik tentang cara Anda menggunakan aplikasi. Tidak ada akun dan tidak ada yang mengidentifikasi Anda.",
-      "description_opt_out": "Membiarkan ini tetap aktif membantu kami membangun aplikasi yang lebih baik. Anda dapat mematikannya kapan saja dan tidak ada yang akan dikirim lagi."
+      "description_opt_out": "Membiarkan ini tetap aktif membantu kami membangun aplikasi yang lebih baik. Anda dapat mematikannya kapan saja dan tidak ada yang akan dikirim lagi.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Pemilihan Model",
@@ -170,7 +174,10 @@
       "llm_model": "Model LLM",
       "provider_settings": "Pengaturan Penyedia",
       "show_less": "Tampilkan Lebih Sedikit",
-      "view_more": "Tampilkan Lebih Banyak"
+      "view_more": "Tampilkan Lebih Banyak",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "URL Dasar",
@@ -810,6 +817,10 @@
   },
   "models": {
     "recommended": "Direkomendasikan",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Mungkin tidak sesuai di memori",
       "tight_compact": "Mungkin tidak sesuai",
@@ -1024,7 +1035,14 @@
     "storage_low": "Penyimpanan rendah! Model {{modelSize}} > {{freeSpace}} gratis",
     "storage_check_failed": "Gagal memeriksa penyimpanan",
     "setup_failed_title": "Pengaturan unduhan gagal",
-    "setup_failed_message": "Gagal mengatur unduhan model HF: {{error}}"
+    "setup_failed_message": "Gagal mengatur unduhan model HF: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

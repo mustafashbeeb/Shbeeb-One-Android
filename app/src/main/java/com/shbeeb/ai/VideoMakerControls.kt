@@ -77,14 +77,14 @@ internal fun VideoMakerControls() {
     }
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp), color = Color(0xFF26183F)
+        shape = RoundedCornerShape(18.dp), color = OneSurface
     ) {
         Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("صناعة فيديو عمودي من صورة — بدون إنترنت",
-                color = Color(0xFFF7CB78))
+                color = OnePrimary)
             Text(
                 "مقطع صامت لمدة 8 ثوانٍ، 9:16، تقريب كاميرا ناعم من صورة تختارها. هذه معالجة فيديو حقيقية على الهاتف وليست تحريك شخصيات بالذكاء الاصطناعي.",
-                color = Color(0xFFB7C8D8)
+                color = OneMuted
             )
             Button(onClick = { choosePhoto.launch("image/*") }, enabled = !busy,
                 modifier = Modifier.fillMaxWidth()) { Text("اختيار صورة للمقطع") }
@@ -104,7 +104,7 @@ internal fun VideoMakerControls() {
                     if (!busy && input != null) {
                         busy = true
                         message = "جارٍ معالجة مقطع 8 ثوانٍ محلياً. لا تغلق التطبيق أثناء المعالجة."
-                        val file = File(context.cacheDir, "shbeeb-local-clip.mp4")
+                        val file = File(context.cacheDir, "shbeeb-one-local-clip.mp4")
                         Thread {
                             val response = runCatching { LocalVideoMaker.render(input, file); file }
                             handler.post {
@@ -123,11 +123,11 @@ internal fun VideoMakerControls() {
             ) { Text(if (busy) "جارٍ تجهيز الفيديو…" else "إنشاء فيديو 8 ثوانٍ") }
             if (outputFile != null && !busy) {
                 OutlinedButton(
-                    onClick = { saveMp4.launch("shbeeb-8sec.mp4") },
+                    onClick = { saveMp4.launch("shbeeb-one-8sec.mp4") },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("حفظ المقطع MP4") }
             }
-            if (message.isNotBlank()) Text(message, color = Color(0xFFB7C8D8))
+            if (message.isNotBlank()) Text(message, color = OneMuted)
         }
     }
 }

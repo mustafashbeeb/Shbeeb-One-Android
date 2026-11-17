@@ -24,7 +24,7 @@ internal enum class ChatEngine(val id: String, val title: String, val hint: Stri
     DEEPSEEK("deepseek", "DeepSeek", "سحابي • مدفوع حسب الاستخدام", "deepseek-flash"),
     OPENROUTER("openrouter", "OpenRouter", "سحابي • نماذج مجانية محدودة", "openrouter/free"),
     OLLAMA("ollama", "Ollama", "محلي على كمبيوتر متصل بالشبكة • بلا مفتاح", "llama3.2:1b"),
-    LOCAL("local", "ذكاء الهاتف", "محرك LiteRT-LM يعمل بدون إنترنت بعد استيراد نموذج .litertlm", "");
+    LOCAL("local", "LiteRT-LM", "محلي • نموذج محادثة .litertlm على الهاتف", "");
 
     companion object {
         fun fromId(id: String): ChatEngine = values().firstOrNull { it.id == id } ?: OPENAI

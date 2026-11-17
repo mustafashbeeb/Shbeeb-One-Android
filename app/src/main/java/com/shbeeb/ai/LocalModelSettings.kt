@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,87 +35,133 @@ internal fun LocalModelSettings(
 ) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
-    var copying by remember { mutableStateOf(false) }
+    var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
-    var confirmDelete by remember { mutableStateOf(false) }
+    var confirmRemove by remember { mutableStateOf(false) }
+    var confirmLegacyDelete by remember { mutableStateOf(false) }
+    val modelInfo = LocalModelFiles.info(context)
     val installed = LocalModelFiles.isInstalled(context)
-    val picker = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null && !copying) {
-            copying = true
-            message = "جارٍ نسخ النموذج إلى مساحة التطبيق. قد يستغرق ذلك عدة دقائق."
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null && !busy) {
+            busy = true
+            message = "جارٍ فحص الملف… عند أول تشغيل سيُنشأ داخل التطبيق ملف تشغيل خاص بامتداد .litertlm. سيبقى الملف الأصلي كما هو."
             Thread {
-                val response = runCatching {
-                    val size = LocalModelFiles.import(context, uri)
+                val result = runCatching {
+                    val selected = LocalModelFiles.select(context, uri)
                     LocalOnDeviceEngine.reset()
-                    size
+                    LocalModelFiles.pruneWorkingCopiesExceptSelected(context)
+                    selected
                 }
                 handler.post {
-                    response.onSuccess { size ->
-                        message = "تم استيراد نموذج محلي: ${size / (1024 * 1024)} ميغابايت. اختبر الرد من شاشة المساعد."
+                    result.onSuccess { selected ->
+                        message = "تم ربط ${selected.displayName} (${selected.sizeBytes / 1_048_576L} MB). عند أول تشغيل سيُنسخ إلى مساحة Shbeeb One الخاصة، لذلك يلزم توفير مساحة إضافية تقارب حجم النموذج مع هامش أمان. يبقى ملف المكتبة الأصلي دون تغيير. اختبر رداً محلياً قبل الاعتماد عليه."
                         onInstalled()
                     }.onFailure {
-                        message = it.message ?: "فشل استيراد النموذج. جرّب ملفاً آخر."
+                        message = it.message ?: "تعذّر استخدام الملف المحدد."
                     }
-                    copying = false
+                    busy = false
                 }
             }.start()
         }
     }
 
-    if (confirmDelete) {
+    if (confirmRemove) {
         AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text("حذف نموذج الذكاء المحلي") },
-            text = { Text("هل تريد حذف ملف النموذج الكبير من مساحة الهاتف؟ سيتم فقد إمكانية المحادثة دون إنترنت إلى أن تعيد استيراده.") },
+            onDismissRequest = { confirmRemove = false },
+            title = { Text(if (LocalModelFiles.selectedUri(context) != null) "فك ربط النموذج المشترك" else "حذف النسخة القديمة") },
+            text = {
+                Text(
+                    if (LocalModelFiles.selectedUri(context) != null)
+                        "سيُزال إذن Shbeeb One عن الملف فقط؛ لن يُحذف ملفك من المجلد المشترك."
+                    else
+                        "سيُحذف ملف النموذج القديم من مساحة التطبيق الخاصة. لا يمكن استرجاعه إلا بإعادة اختياره أو تنزيله."
+                )
+            },
             confirmButton = {
                 TextButton(onClick = {
-                    confirmDelete = false
-                    copying = true
+                    confirmRemove = false
+                    busy = true
                     Thread {
                         val result = runCatching {
                             LocalOnDeviceEngine.reset()
-                            val model = LocalModelFiles.modelFile(context)
-                            !model.exists() || model.delete()
+                            if (LocalModelFiles.selectedUri(context) != null) {
+                                LocalModelFiles.clearReference(context)
+                                "تم فك ربط الملف؛ بقي محفوظاً في المجلد الذي اخترته."
+                            } else {
+                                check(LocalModelFiles.deleteLegacyCopy(context)) { "تعذّر حذف النسخة القديمة." }
+                                "تم حذف النسخة القديمة من مساحة التطبيق."
+                            }
                         }
                         handler.post {
-                            message = if (result.getOrDefault(false))
-                                "تم حذف النموذج المحلي من مساحة التطبيق."
-                            else "تعذّر حذف النموذج؛ حاول لاحقاً."
+                            message = result.getOrElse { it.message ?: "تعذّر إكمال العملية." }
                             onInstalled()
-                            copying = false
+                            busy = false
                         }
                     }.start()
-                }) { Text("حذف النموذج") }
+                }) { Text(if (LocalModelFiles.selectedUri(context) != null) "فك الربط" else "حذف النسخة") }
             },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("إلغاء") } }
+            dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text("إلغاء") } }
+        )
+    }
+
+    if (confirmLegacyDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmLegacyDelete = false },
+            title = { Text("حذف النسخة القديمة لتوفير المساحة") },
+            text = { Text("هذه نسخة سابقة داخل مساحة Shbeeb One الخاصة. سيبقى ملف النموذج المشترك المحدد كما هو. لا يمكن التراجع عن حذف النسخة القديمة.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmLegacyDelete = false
+                    busy = true
+                    Thread {
+                        val deleted = runCatching {
+                            LocalOnDeviceEngine.reset()
+                            LocalModelFiles.deleteLegacyCopy(context)
+                        }.getOrDefault(false)
+                        handler.post {
+                            message = if (deleted) "حُذفت النسخة القديمة؛ لم يُحذف الملف المشترك."
+                                else "تعذّر حذف النسخة القديمة."
+                            onInstalled()
+                            busy = false
+                        }
+                    }.start()
+                }) { Text("حذف النسخة القديمة") }
+            },
+            dismissButton = { TextButton(onClick = { confirmLegacyDelete = false }) { Text("إلغاء") } }
         )
     }
 
     Surface(
-        color = Color(0xFF0D1B2A),
+        color = OneSurface,
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("محرك ذكاء داخل الهاتف — تجريبي", color = Color(0xFF35D6FF))
+            Text("محرك ذكاء داخل الهاتف — تجريبي", color = OnePrimary, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
             Text(
-                if (installed)
-                    "استُورد ملف بحجم ${LocalModelFiles.modelFile(context).length() / (1024 * 1024)} ميغابايت؛ توافقه غير مؤكد حتى ينجح رد تجريبي. لا يحتاج المحرك مفتاح API أو إنترنت بعد الاستيراد."
-                else
-                    "لم يُثبّت نموذج على الهاتف. نزّل نموذج .litertlm صغيراً ومرخّصاً من LiteRT Community، ثم استورده هنا. ملف GGUF لا يعمل في هذا المحرك.",
-                color = Color.White
+                when {
+                    modelInfo?.isShared == true ->
+                        "مصدر النموذج المشترك: ${modelInfo.displayName} — ${modelInfo.sizeBytes / 1_048_576L} MB. عند أول استخدام ينشئ التطبيق نسخة تشغيل خاصة لأن LiteRT-LM يحتاج مسار ملف بامتداد .litertlm. يلزم تقريباً حجم إضافي مماثل + 128 MB؛ لا يُحذف ولا يُعدّل المصدر المشترك."
+                    modelInfo != null ->
+                        "نموذج قديم: ${modelInfo.displayName} — ${modelInfo.sizeBytes / 1_048_576L} MB داخل مساحة التطبيق الخاصة؛ التطبيقات الأخرى لا تصل إليه."
+                    else ->
+                        "لا يوجد نموذج محدد. اختر ملف .litertlm محفوظاً محلياً. سيُنسخ إلى مساحة التطبيق الخاصة عند أول تشغيل؛ يجب أن يكون موفر الملفات محلياً وقابلاً للبحث، وأن تتوفر مساحة إضافية بحجم النموذج تقريباً."
+                },
+                color = OneInk
             )
             Text(
-                "مهم: النموذج لا يأتي داخل APK. التشغيل CPU فقط. وضع الرد السريع يقلل طول الإجابة لكنه لا يجعل النموذج نفسه أذكى. نموذج 1B قد يخطئ بالمعلومات الأساسية.",
-                color = Color(0xFFB7C8D8)
+                "التوافق مهم: هذا المحرك يقبل .litertlm فقط. نموذج محادثة GGUF يحتاج محرك llama.cpp، وGGUF الخاص بالصور ليس نموذج محادثة. يحتاج الملف إلى ترخيص مناسب؛ نجاح اختياره لا يضمن توافقه حتى تنجح محادثة تجريبية.",
+                color = OneMuted
             )
-            Text("طول إجابة ذكاء الهاتف", color = Color(0xFF35D6FF))
+            Text(
+                "لا يأتي نموذج داخل APK. التشغيل CPU فقط. وضع الرد السريع يحدد طول الإجابة ولا يزيد معرفة النموذج؛ النماذج الصغيرة قد تخطئ.",
+                color = OneMuted
+            )
+            Text("طول إجابة ذكاء الهاتف", color = OnePrimary)
             LocalResponseMode.values().forEach { mode ->
                 OutlinedButton(
                     onClick = { onResponseModeChanged(mode) },
-                    enabled = !copying,
+                    enabled = !busy,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text((if (responseMode == mode) "✓ " else "") + mode.title)
@@ -125,50 +170,57 @@ internal fun LocalModelSettings(
             if (installed) {
                 OutlinedButton(
                     onClick = {
-                        copying = true
-                        message = "جارٍ إعادة تهيئة سياق النموذج..."
+                        busy = true
+                        message = "جارٍ إغلاق سياق النموذج…"
                         Thread {
                             val result = runCatching { LocalOnDeviceEngine.reset() }
                             handler.post {
                                 message = if (result.isSuccess)
-                                    "بدأت جلسة استدلال جديدة. لا يحذف هذا سجل المحادثة المحفوظ في التطبيق."
-                                else "لم يتمكن النموذج من إعادة التهيئة."
-                                copying = false
+                                    "بدأت جلسة استدلال جديدة. بقي ملف النموذج كما هو."
+                                else "تعذرت إعادة تهيئة النموذج."
+                                busy = false
                             }
                         }.start()
                     },
-                    enabled = !copying,
+                    enabled = !busy,
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("بدء جلسة ذكاء محلي جديدة") }
             }
             TextButton(onClick = {
                 runCatching {
-                    context.startActivity(Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://huggingface.co/litert-community")))
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://huggingface.co/litert-community")))
                 }.onFailure { message = "تعذّر فتح صفحة النماذج. استخدم المتصفح." }
             }) { Text("استعراض نماذج LiteRT المرخّصة") }
             Text(
-                "للبدء: يوجد نموذج Gemma 3 1B مضغوط بصيغة .litertlm (نحو 584 ميغابايت). يُحمّل من المصدر بعد قبول شروط ترخيص Gemma. وجود الملف لا يضمن تشغيله؛ جرّب دون إنترنت.",
-                color = Color(0xFFB7C8D8)
+                "للتجربة، يعرض مجتمع LiteRT نماذج Gemma بصيغة .litertlm. اقرأ بطاقة النموذج وترخيصه ومتطلباته، ثم اختر الملف المحفوظ محلياً.",
+                color = OneMuted
             )
             TextButton(onClick = {
                 runCatching {
                     context.startActivity(Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://huggingface.co/litert-community/Gemma3-1B-IT/tree/main")))
                 }.onFailure { message = "تعذّر فتح صفحة النموذج، افتح Hugging Face من المتصفح." }
-            }) { Text("صفحة نموذج Gemma 3 1B المناسب للتجربة") }
+            }) { Text("صفحة نموذج Gemma 3 1B للتجربة") }
             Button(
-                onClick = { picker.launch(arrayOf("*/*")) },
-                enabled = !copying,
+                onClick = { picker.launch(arrayOf("application/octet-stream", "*/*")) },
+                enabled = !busy,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(if (copying) "جارٍ الاستيراد…" else "استيراد نموذج .litertlm من الملفات") }
+            ) { Text(if (busy) "جارٍ الفحص…" else "اختيار ملف .litertlm من الجهاز أو المكتبة المشتركة") }
             if (installed) {
                 OutlinedButton(
-                    onClick = { confirmDelete = true }, enabled = !copying,
+                    onClick = { confirmRemove = true },
+                    enabled = !busy,
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("حذف النموذج من الهاتف") }
+                ) { Text(if (LocalModelFiles.selectedUri(context) != null) "فك ربط الملف (لا يحذفه)" else "حذف النسخة القديمة") }
             }
-            if (message.isNotBlank()) Text(message, color = Color(0xFFB7C8D8))
+            if (LocalModelFiles.selectedUri(context) != null && LocalModelFiles.hasLegacyModel(context)) {
+                OutlinedButton(
+                    onClick = { confirmLegacyDelete = true },
+                    enabled = !busy,
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("حذف النسخة القديمة لتوفير مساحة") }
+            }
+            if (message.isNotBlank()) Text(message, color = OneMuted)
         }
     }
 }

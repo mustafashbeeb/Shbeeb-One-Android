@@ -301,7 +301,7 @@ internal fun VoiceConversationScreen(
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("المحادثة الصوتية", fontSize = 23.sp, fontWeight = FontWeight.Bold,
-                color = Color(0xFFF7CB78))
+                color = OnePrimary)
             TextButton(onClick = {
                 active = false
                 listening = false
@@ -311,9 +311,9 @@ internal fun VoiceConversationScreen(
                 onClose()
             }) { Text("رجوع") }
         }
-        Text("المحرّك: ${engine.title}", color = Color(0xFF60C9FF))
+        Text("المحرّك: ${engine.title}", color = OnePrimary)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("لغة التعرف على الكلام", color = Color.White)
+            Text("لغة التعرف على الكلام", color = OneInk)
             Box {
                 OutlinedButton(onClick = { languageExpanded = true }, enabled = !active) {
                     Text(availableLanguages.firstOrNull { it.first == recognitionLanguage }?.second
@@ -336,20 +336,20 @@ internal fun VoiceConversationScreen(
                 }
             }
         }
-        Surface(color = Color(0xFF0D1B2A), shape = RoundedCornerShape(18.dp)) {
+        Surface(color = OneMint, shape = RoundedCornerShape(18.dp)) {
             Column(Modifier.fillMaxWidth().padding(18.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     when {
-                        speaking -> "🔊 عم يرد بصوت..."
-                        listening -> "🎙 عم اسمعك..."
-                        busy || awaitingReply -> "⏳ عم يحضّر الجواب..."
-                        active -> "🎙 جاهز للاستماع..."
+                        speaking -> "جارٍ الرد بصوت…"
+                        listening -> "أستمع إليك…"
+                        busy || awaitingReply -> "جارٍ تحضير الرد…"
+                        active -> "جاهز للاستماع…"
                         else -> "الميكروفون متوقف"
                     },
-                    fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White
+                    fontSize = 20.sp, fontWeight = FontWeight.Bold, color = OnePrimaryDark
                 )
-                Text(status, color = Color(0xFFB7C8D8))
+                Text(status, color = OneMuted)
             }
         }
         if (!active) {
@@ -360,7 +360,7 @@ internal fun VoiceConversationScreen(
                 },
                 enabled = configured && !busy,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("🎙 بدء محادثة صوتية") }
+            ) { Text("بدء المحادثة الصوتية") }
         } else {
             OutlinedButton(onClick = {
                 active = false
@@ -372,14 +372,14 @@ internal fun VoiceConversationScreen(
             }, modifier = Modifier.fillMaxWidth()) { Text("إيقاف المحادثة") }
         }
         if (lastQuestion.isNotBlank()) {
-            Text("أنت: $lastQuestion", color = Color.White)
+            Text("أنت: $lastQuestion", color = OneInk)
         }
         if (lastAnswer.isNotBlank()) {
-            Text("${engine.title}: $lastAnswer", color = Color(0xFFB7C8D8))
+            Text("${engine.title}: $lastAnswer", color = OneInk)
         }
         Text(
             "تعمل المحادثة فقط أثناء بقاء هذه الشاشة مفتوحة وبعد منح إذن الميكروفون. التعرف على الكلام قد يحتاج الإنترنت حتى لو كان ذكاء الهاتف محلياً؛ جرّب تغيير لغة التعرف إذا ظهر الرمز 12. أوقف المحادثة في أي وقت.",
-            fontSize = 12.sp, color = Color(0xFFB7C8D8)
+            fontSize = 12.sp, color = OneMuted
         )
     }
 }

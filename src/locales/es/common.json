@@ -65,7 +65,8 @@
     "title": "Idioma",
     "search_placeholder": "Buscar idiomas",
     "no_results": "Ningún idioma coincide con \"{{query}}\"",
-    "changed": "Idioma cambiado a {{language}}"
+    "changed": "Idioma cambiado a {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Compartir telemetría anónima",
       "description_events": "AnythingLLM envía una pequeña cantidad de eventos anónimos, como \"se completó un chat\" o \"se utilizó una herramienta\", para que podamos ver qué características importan y dónde fallan las cosas.",
       "description_privacy": "Esto nunca incluye sus chats, documentos, prompts o nada específico sobre cómo usa la aplicación. No hay cuenta ni nada que lo identifique.",
-      "description_opt_out": "Dejar esto activado nos ayuda a construir una mejor aplicación. Puede desactivarlo en cualquier momento y no se enviará nada más."
+      "description_opt_out": "Dejar esto activado nos ayuda a construir una mejor aplicación. Puede desactivarlo en cualquier momento y no se enviará nada más.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Selección de modelo",
@@ -170,7 +174,10 @@
       "llm_model": "Modelo de LLM",
       "provider_settings": "Configuración del proveedor",
       "show_less": "Mostrar menos",
-      "view_more": "Ver más"
+      "view_more": "Ver más",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "URL base",
@@ -878,6 +885,10 @@
   },
   "models": {
     "recommended": "Recomendado",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Puede que no quepa en memoria",
       "tight_compact": "Puede que no quepa",
@@ -1106,7 +1117,14 @@
     "storage_low": "¡Almacenamiento bajo! Modelo {{modelSize}} > {{freeSpace}} libre",
     "storage_check_failed": "Error al verificar el almacenamiento",
     "setup_failed_title": "Error de configuración de descarga",
-    "setup_failed_message": "Error al configurar la descarga del modelo HF: {{error}}"
+    "setup_failed_message": "Error al configurar la descarga del modelo HF: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

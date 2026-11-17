@@ -24,16 +24,35 @@ android {
         applicationId = "com.shbeeb.ai"
         minSdk = 26
         targetSdk = 35
-        versionCode = 17
-        versionName = "0.10.7"
+        versionCode = 19
+        versionName = "0.12.0"
         ndk {
             abiFilters.add("arm64-v8a")
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-std=c++17"
+                arguments += listOf(
+                    "-DSD_BUILD_EXAMPLES=OFF",
+                    "-DSD_OPENCL=OFF",
+                    "-DSD_WEBP=OFF",
+                    "-DSD_WEBM=OFF",
+                    "-DGGML_OPENMP=OFF"
+                )
+            }
         }
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 
     compileOptions {
@@ -72,6 +91,7 @@ dependencies {
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.10.1")
 

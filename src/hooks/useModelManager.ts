@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import * as RNFS from '@dr.pogodin/react-native-fs';
 import { resolveDestinationPathFromGGUFUrl } from '@/utils/models/defaults';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -12,6 +12,9 @@ import ImportedModels from '@/utils/models/imported';
 import { downloadFileAtomic } from '@/utils/fs/atomicDownload';
 import { showToast } from '@/utils/Notification';
 import i18n from '@/i18n';
+import { cancelSharedGGUFDownload, downloadSharedGGUF, getSharedModelFolder, pickSharedModelFolder, releaseSharedGGUF } from '@/utils/models/sharedModelAccess';
+import SharedModelLocations from '@/utils/models/sharedLocations';
+import { sizeToBytes } from '@/utils/models/memoryFit';
 
 const UI_PROGRESS_INTERVAL_MS = 250;
 const NOTIFICATION_PROGRESS_INTERVAL_MS = 5000;
@@ -29,7 +32,7 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
   const [downloadedModels, setDownloadedModels] = useState<{ [key: string]: boolean }>({});
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   // The in-flight model download, so the card can cancel it. `jobId` is null until RNFS has started the job.
-  const activeDownload = useRef<{ modelName: string; jobId: number | null; cancelled: boolean } | null>(null);
+  const activeDownload = useRef<{ modelName: string; jobId: number | null; sharedDownloadId: string | null; cancelled: boolean } | null>(null);
 
   // Check which models are downloaded and set initial selection
   useEffect(() => {
@@ -46,6 +49,10 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
   const updateDownloadedModels = async (models: any[]) => {
     const downloaded: { [key: string]: boolean } = {};
     for (const model of models) {
+      if (model.isShared) {
+        downloaded[model.modelId] = true;
+        continue;
+      }
       const path = resolveDestinationPathFromGGUFUrl(model.downloadUrl);
       downloaded[model.modelId] = await RNFS.exists(path);
     }
@@ -160,6 +167,62 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
     }
   };
 
+  const downloadToSharedStorage = async (model: any) => {
+    const imported = model.isImported ? await ImportedModels.find(model.modelId) : null;
+    if (model.isImported && !imported) throw new Error('تعذّر العثور على بيانات النموذج المستورد. أعد إضافته ثم حاول مجدداً.');
+    const fromUrl = String(model.downloadUrl || '');
+    const lastSegment = fromUrl.split(/[?#]/, 1)[0].split('/').pop() || `${model.modelId}.gguf`;
+    let fallbackName = lastSegment;
+    try { fallbackName = decodeURIComponent(lastSegment); } catch { /* keep the URL segment */ }
+    const candidateName = imported?.filename || fallbackName;
+    const modelSlug = (String(model.modelId).split('/').pop() || 'model').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 48);
+    const modelStem = candidateName.replace(/\.gguf$/i, '').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 110) || 'weights';
+    const fileName = `${modelSlug}__${modelStem}.gguf`;
+    const expectedSize = sizeToBytes(model.size);
+    const notificationId = `shared-${Date.now()}`;
+    await PushNotifications.send('progress', {
+      id: notificationId,
+      title: i18n.t('downloads.notification_downloading_title'),
+      body: i18n.t('downloads.notification_downloading_body', { model: model.modelId }),
+      android: { progress: { indeterminate: expectedSize <= 0 } },
+    });
+    let lastNotifiedAt = 0;
+    try {
+      const result = await downloadSharedGGUF(fromUrl, fileName, expectedSize, progress => {
+        const percent = progress.totalBytes > 0
+          ? Math.min(100, Math.floor((progress.bytesWritten / progress.totalBytes) * 100))
+          : 0;
+        setDownloadProgress(percent);
+        const now = Date.now();
+        if (now - lastNotifiedAt < NOTIFICATION_PROGRESS_INTERVAL_MS) return;
+        lastNotifiedAt = now;
+        PushNotifications.send('progress', {
+          id: notificationId,
+          title: i18n.t('downloads.notification_downloading_title'),
+          body: i18n.t('downloads.notification_downloading_body', { model: model.modelId }),
+          android: { progress: { current: percent, max: 100, indeterminate: progress.totalBytes <= 0 } },
+        });
+      }, downloadId => {
+        if (activeDownload.current) activeDownload.current.sharedDownloadId = downloadId;
+      });
+
+      if (imported) {
+        await ImportedModels.add({ ...imported, source: 'shared', sharedUri: result.uri, size: result.sizeBytes });
+      } else {
+        await SharedModelLocations.add({
+          modelId: model.modelId,
+          uri: result.uri,
+          filename: result.name,
+          sizeBytes: result.sizeBytes,
+          sha256: result.sha256,
+        });
+      }
+      return result;
+    } finally {
+      PushNotifications.cancel('progress', notificationId);
+    }
+  };
+
   /**
    * Download a model. The vision projector (mmproj) of a multimodal model is NOT fetched here - the
    * user opts into that from the attachments sheet the first time they want to send an image
@@ -167,6 +230,10 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
    */
   const downloadModel = async (model: any, runPrefetchChecks = true) => {
     if (modelDownloadUrl) return false;
+
+    // A SAF-backed GGUF already exists in the user's shared library. Selecting it
+    // must never enter the URL download/copy path.
+    if (model.isShared) return await selectModel(model);
 
     const isDownloaded = await checkModelDownloaded(model.downloadUrl);
     if (isDownloaded) return await selectModel(model);
@@ -177,21 +244,43 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
       if (!approved) return false;
     }
 
-    setModelDownloadUrl(model.downloadUrl);
-    const storageLocation = resolveDestinationPathFromGGUFUrl(model.downloadUrl);
+    let useSharedStorage = false;
+    if (Platform.OS === 'android') {
+      let sharedFolderUri = await getSharedModelFolder();
+      useSharedStorage = await AwaitableAlert(
+        i18n.t('downloads.shared_storage_choice_title'),
+        i18n.t('downloads.shared_storage_choice_message'),
+        { text: i18n.t('downloads.shared_storage_app_only'), style: 'cancel' },
+        {
+          text: i18n.t(sharedFolderUri ? 'downloads.shared_storage_use_folder' : 'downloads.shared_storage_choose_folder'),
+          style: 'default',
+        },
+      );
+      if (useSharedStorage && !sharedFolderUri) {
+        sharedFolderUri = await pickSharedModelFolder();
+        if (!sharedFolderUri) return false;
+      }
+    }
 
-    activeDownload.current = { modelName: model.name || model.modelId, jobId: null, cancelled: false };
+    setModelDownloadUrl(model.downloadUrl);
+    activeDownload.current = { modelName: model.name || model.modelId, jobId: null, sharedDownloadId: null, cancelled: false };
     try {
       activateKeepAwake();
-      // Android drops the connection once the app is backgrounded or the phone locks.
+      // This client keeps inference/downloads in the foreground rather than hiding long model transfers.
       showToast(i18n.t('downloads.keep_app_open'), 'long');
       uiStore.setSessionKey('@downloadInProgress', true, uiStore.globalEvents.MODEL_DOWNLOAD_STARTED);
-      await downloadToStorage({
-        fromUrl: model.downloadUrl,
-        toFile: storageLocation,
-        title: i18n.t('downloads.notification_downloading_title'),
-        body: i18n.t('downloads.notification_downloading_body', { model: model.modelId }),
-      });
+      if (useSharedStorage) {
+        await downloadToSharedStorage(model);
+        setDownloadProgress(100);
+      } else {
+        const storageLocation = resolveDestinationPathFromGGUFUrl(model.downloadUrl);
+        await downloadToStorage({
+          fromUrl: model.downloadUrl,
+          toFile: storageLocation,
+          title: i18n.t('downloads.notification_downloading_title'),
+          body: i18n.t('downloads.notification_downloading_body', { model: model.modelId }),
+        });
+      }
       setDownloadedModels(prev => ({ ...prev, [model.modelId]: true }));
       PushNotifications.send('primary', {
         title: i18n.t('downloads.notification_complete_title'),
@@ -212,7 +301,7 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
       // is paused, it never shows, and awaiting it held the `finally` cleanup (stuck progress bar).
       Alert.alert(
         i18n.t('downloads.download_failed_title'),
-        i18n.t('downloads.download_failed_message'),
+        error instanceof Error && error.message ? error.message : i18n.t('downloads.download_failed_message'),
         [{ text: i18n.t('common.ok'), style: 'default' }]
       );
       return false;
@@ -245,11 +334,57 @@ export default function useModelManager({ llmPreferences, fetchLLMPreference, LL
     // The download may have finished (or failed) while the dialog was up.
     if (!confirmed || activeDownload.current !== job) return false;
     job.cancelled = true;
-    if (job.jobId !== null) RNFS.stopDownload(job.jobId);
+    if (job.sharedDownloadId) await cancelSharedGGUFDownload(job.sharedDownloadId).catch(() => { });
+    else if (job.jobId !== null) RNFS.stopDownload(job.jobId);
     return true;
   };
 
   const uninstallModel = async (model: any) => {
+    if (model.isShared) {
+      const isArabic = i18n.language.toLowerCase().startsWith('ar');
+      const shouldUnlink = await AwaitableAlert(
+        isArabic ? 'إزالة النموذج من القائمة؟' : 'Remove model from this list?',
+        isArabic
+          ? 'سيُزال مرجع Shbeeb One وإذنه فقط. لن يُحذف ملف GGUF من مجلدك المشترك، وقد تحتاج التطبيقات الأخرى إلى اختيار الملف بنفسها.'
+          : 'This removes Shbeeb One’s reference and read permission only. The GGUF file stays in your shared folder; other apps must select it themselves.',
+        { text: i18n.t('common.cancel'), style: 'cancel' },
+        { text: isArabic ? 'إزالة المرجع' : 'Remove reference', style: 'destructive' },
+      );
+      if (!shouldUnlink) return false;
+
+      try {
+        if (selectedModel === model.modelId) {
+          await LLMProvider?.unloadModel?.();
+          setSelectedModel(null);
+          await uiStore.setToStorage('llmPreference', {
+            ...llmPreferences,
+            config: { ...llmPreferences.config, model: null },
+          });
+          await fetchLLMPreference();
+        }
+        if (model.isImported) await ImportedModels.remove(model.modelId);
+        else await SharedModelLocations.remove(model.modelId);
+        if (model.sharedUri) {
+          const [importedModels, sharedLocations] = await Promise.all([
+            ImportedModels.list(),
+            SharedModelLocations.list(),
+          ]);
+          const stillReferenced = importedModels.some(item => item.sharedUri === model.sharedUri)
+            || sharedLocations.some(item => item.uri === model.sharedUri);
+          if (!stillReferenced) await releaseSharedGGUF(model.sharedUri).catch(() => { });
+        }
+        const privatePath = model.downloadUrl
+          ? resolveDestinationPathFromGGUFUrl(model.downloadUrl)
+          : null;
+        const stillInstalledPrivately = privatePath ? await RNFS.exists(privatePath) : false;
+        setDownloadedModels(prev => ({ ...prev, [model.modelId]: stillInstalledPrivately }));
+        return true;
+      } catch (error) {
+        console.error('Failed to unlink shared model:', error);
+        return false;
+      }
+    }
+
     const shouldUninstall = await AwaitableAlert(
       i18n.t('downloads.uninstall_model_title'),
       i18n.t('downloads.uninstall_model_message'),

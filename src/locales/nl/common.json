@@ -65,7 +65,8 @@
     "title": "Taal",
     "search_placeholder": "Talen zoeken",
     "no_results": "Geen talen gevonden die overeenkomen met \"{{query}}\"",
-    "changed": "Taal gewijzigd naar {{language}}"
+    "changed": "Taal gewijzigd naar {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Anonieme telemetrie delen",
       "description_events": "AnythingLLM verzendt een klein aantal anonieme gebeurtenissen, zoals \"een chat werd voltooid\" of \"een hulpmiddel werd gebruikt\", zodat we kunnen zien welke functies belangrijk zijn en waar dingen kapot gaan.",
       "description_privacy": "Dit omvat nooit je chats, documenten, prompts of iets specifieks over hoe je de app gebruikt. Er is geen account en niets wat jou identificeert.",
-      "description_opt_out": "Als je dit aanzet, help je ons een betere applicatie te bouwen. Je kunt het op elk moment uitschakelen en er zal niets meer worden verzonden."
+      "description_opt_out": "Als je dit aanzet, help je ons een betere applicatie te bouwen. Je kunt het op elk moment uitschakelen en er zal niets meer worden verzonden.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Modelselectie",
@@ -170,7 +174,10 @@
       "llm_model": "LLM Model",
       "provider_settings": "Provider-instellingen",
       "show_less": "Minder weergeven",
-      "view_more": "Meer weergeven"
+      "view_more": "Meer weergeven",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "Basis-URL",
@@ -844,6 +851,10 @@
   },
   "models": {
     "recommended": "Aanbevolen",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Mogelijk niet in geheugen",
       "tight_compact": "Mogelijk niet geschikt",
@@ -1065,7 +1076,14 @@
     "storage_low": "Opslag laag! Model {{modelSize}} > {{freeSpace}} vrij",
     "storage_check_failed": "Opslagcontrole mislukt",
     "setup_failed_title": "Download-setup mislukt",
-    "setup_failed_message": "Kon HF-modeldownload niet instellen: {{error}}"
+    "setup_failed_message": "Kon HF-modeldownload niet instellen: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

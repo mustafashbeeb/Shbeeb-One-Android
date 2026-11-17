@@ -69,7 +69,7 @@ function parsedModelName(modelName: string) {
 const ABOUT_LINKS: SupportLink[] = [
   {
     title: tKey('settings.about.star_github'),
-    link: 'https://github.com/mustafashbeeb/Shbeeb-AI',
+    link: 'https://github.com/mustafashbeeb/Shbeeb-One-Android',
     icon: <GithubLogo size={18} color="#FFF" />,
   },
   {

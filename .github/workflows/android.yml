@@ -1,10 +1,11 @@
-name: Android integration checks
+name: Shbeeb One Android checks
 
 on:
   push:
     branches:
       - main
       - integration/anythingllm-gpl
+      - feature/on-device-media-generation
   pull_request:
   workflow_dispatch:
 
@@ -22,6 +23,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Fetch native image engine sources
+        run: |
+          git submodule update --init --depth 1 third_party/stable-diffusion.cpp
+          git -C third_party/stable-diffusion.cpp submodule update --init --depth 1 ggml
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -55,14 +63,20 @@ jobs:
       - name: Type-check JavaScript
         run: yarn typecheck
 
+      - name: Verify translations
+        run: yarn translations:verify
+
+      - name: Lint React Native
+        run: yarn lint
+
       - name: Run JavaScript tests
         run: yarn test --runInBand
 
       - name: Run Android tests and lint
-        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug
+        run: ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest :app:lintDebug
 
       - name: Build standalone release APK
-        run: ./gradlew --no-daemon :app:assembleRelease
+        run: ./gradlew --no-daemon --max-workers=2 :app:assembleRelease
 
       - name: Package standalone install ZIP
         run: |
@@ -77,7 +91,7 @@ jobs:
               for chunk in iter(lambda: stream.read(1024 * 1024), b""):
                   digest.update(chunk)
 
-          install = """Shbeeb AI + AnythingLLM — APK مستقل للتجربة
+          install = """Shbeeb One — APK مستقل للتجربة
 
           1. فك ضغط هذا الملف.
           2. ثبّت app-release.apk على جهاز Android.
@@ -85,8 +99,13 @@ jobs:
           4. تحتوي الحزمة JavaScript داخل APK ولا تحتاج إلى خادم Metro.
           5. إذا ظهر تعارض توقيع مع نسخة سابقة، احفظ بياناتك أولاً ثم أزل النسخة السابقة.
           6. تحقّق من SHA256SUMS.txt عند نقل الملف.
+          7. لتجربة الواجهة العربية، افتح إعدادات AnythingLLM واختر العربية؛ قد يلزم إغلاق التطبيق وإعادة فتحه لتطبيق RTL.
+          8. لتوليد الصور محلياً، نزّل أو اختر ملف SD 1.5 Q4 (نحو 1.57 GB) من شاشة الصور. بعد اكتمال التنزيل، جرّب التوليد دون اتصال واحفظ PNG.
+          9. النموذج غير مضمّن في APK. حُدد مجلد حفظه عبر منتقي Android، ويمكن للتطبيق الآخر فتح الملف نفسه عبر منتقي الملفات.
+          10. اعمل بمحاذاة الهاتف وراقب الحرارة والذاكرة؛ محرك الصور الحالي CPU تجريبي وقد يكون بطيئاً.
+          11. أداة الفيديو الحالية تحرّك صورة إلى MP4 صامت، وليست توليد فيديو محلياً من النص.
           """
-          package = apk.parent / "anythingllm-and-shbeeb-standalone.zip"
+          package = apk.parent / "shbeeb-one-android-standalone.zip"
           with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_STORED) as archive:
               archive.write(apk, "app-release.apk")
               archive.writestr("INSTALL_AR.txt", install.encode("utf-8"))
@@ -98,8 +117,8 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: anythingllm-and-shbeeb-standalone-package
+          name: shbeeb-one-android-standalone-package
           path: |
             app/build/outputs/apk/release/app-release.apk
-            app/build/outputs/apk/release/anythingllm-and-shbeeb-standalone.zip
+            app/build/outputs/apk/release/shbeeb-one-android-standalone.zip
           if-no-files-found: error

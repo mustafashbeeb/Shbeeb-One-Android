@@ -65,7 +65,8 @@
     "title": "语言",
     "search_placeholder": "搜索语言",
     "no_results": "没有语言匹配\"{{query}}\"",
-    "changed": "语言已更改为{{language}}"
+    "changed": "语言已更改为{{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "分享匿名遥测",
       "description_events": "AnythingLLM 发送少量匿名事件，例如\"完成了一次聊天\"或\"使用了一个工具\"，以便我们可以看到哪些功能重要，以及在哪些地方出现了问题。",
       "description_privacy": "这永远不包括您的聊天、文档、提示或有关您如何使用应用程序的任何特定信息。没有帐户，也没有任何可以识别您的信息。",
-      "description_opt_out": "保持这个启用可以帮助我们构建更好的应用程序。您可以随时关闭它，不会有任何进一步的信息被发送。"
+      "description_opt_out": "保持这个启用可以帮助我们构建更好的应用程序。您可以随时关闭它，不会有任何进一步的信息被发送。",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "模型选择",
@@ -170,7 +174,10 @@
       "llm_model": "LLM 模型",
       "provider_settings": "提供商设置",
       "show_less": "显示较少",
-      "view_more": "查看更多"
+      "view_more": "查看更多",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "基础 URL",
@@ -810,6 +817,10 @@
   },
   "models": {
     "recommended": "推荐",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "可能无法装入内存",
       "tight_compact": "可能无法装入",
@@ -1024,7 +1035,14 @@
     "storage_low": "存储空间不足！模型 {{modelSize}} > {{freeSpace}} 可用",
     "storage_check_failed": "检查存储失败",
     "setup_failed_title": "下载设置失败",
-    "setup_failed_message": "无法设置 HF 模型下载：{{error}}"
+    "setup_failed_message": "无法设置 HF 模型下载：{{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

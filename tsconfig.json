@@ -14,5 +14,9 @@
         "src/types/intent-launcher.d.ts"
       ]
     }
-  }
+  },
+  "exclude": [
+    "**/Pods/**",
+    "third_party/**"
+  ]
 }

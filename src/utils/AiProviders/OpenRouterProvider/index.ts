@@ -65,8 +65,8 @@ class OpenRouterProvider extends BaseOpenAILikeProvider {
       // Attribute user-initiated OpenRouter requests to the Shbeeb integration.
       // https://openrouter.ai/docs/api-reference/overview#headers
       defaultHeaders: {
-        'HTTP-Referer': 'https://github.com/mustafashbeeb/Shbeeb-AI',
-        'X-Title': 'Shbeeb AI',
+        'HTTP-Referer': 'https://github.com/mustafashbeeb/Shbeeb-One-Android',
+        'X-Title': 'Shbeeb One',
       },
     });
     this.log(`${this.connectionProvider} initialized with model ${this.model}`);

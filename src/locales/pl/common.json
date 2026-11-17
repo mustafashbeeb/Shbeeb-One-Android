@@ -65,7 +65,8 @@
     "title": "Język",
     "search_placeholder": "Szukaj języków",
     "no_results": "Brak pasujących języków do \"{{query}}\"",
-    "changed": "Język zmieniony na {{language}}"
+    "changed": "Język zmieniony na {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Udostępnij anonimową telemetrię",
       "description_events": "AnythingLLM wysyła małą liczbę anonimowych zdarzeń, takich jak \"czat został ukończony\" lub \"narzędzie zostało użyte\", abyśmy mogli zobaczyć, które funkcje są ważne i gdzie mogą pojawić się problemy.",
       "description_privacy": "Nigdy nie obejmuje to Twoich czatów, dokumentów, podpowiedzi ani nic konkretnego dotyczącego sposobu korzystania z aplikacji. Nie ma konta ani nic, co Cię identyfikuje.",
-      "description_opt_out": "Pozostawienie tego włączonego pomaga nam budować lepszą aplikację. Możesz go wyłączyć w dowolnym momencie i nic więcej nie będzie wysyłane."
+      "description_opt_out": "Pozostawienie tego włączonego pomaga nam budować lepszą aplikację. Możesz go wyłączyć w dowolnym momencie i nic więcej nie będzie wysyłane.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Wybór modelu",
@@ -170,7 +174,10 @@
       "llm_model": "Model LLM",
       "provider_settings": "Ustawienia dostawcy",
       "show_less": "Pokaż mniej",
-      "view_more": "Pokaż więcej"
+      "view_more": "Pokaż więcej",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "Podstawowy adres URL",
@@ -912,6 +919,10 @@
   },
   "models": {
     "recommended": "Rekomendowany",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Może nie zmieścić się w pamięci",
       "tight_compact": "Może nie zmieścić",
@@ -1147,7 +1158,14 @@
     "storage_low": "Magazyn niski! Model {{modelSize}} > {{freeSpace}} wolno",
     "storage_check_failed": "Nie powiodło się sprawdzenie magazynu",
     "setup_failed_title": "Pobieranie nie powiodło się",
-    "setup_failed_message": "Nie udało się skonfigurować pobrania modelu HF: {{error}}"
+    "setup_failed_message": "Nie udało się skonfigurować pobrania modelu HF: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

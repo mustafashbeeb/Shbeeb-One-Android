@@ -65,7 +65,8 @@
     "title": "भाषा",
     "search_placeholder": "भाषा खोजें",
     "no_results": "\"{{query}}\" के लिए कोई भाषा नहीं मिली",
-    "changed": "भाषा बदल गई {{language}} में"
+    "changed": "भाषा बदल गई {{language}} में",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "अनामित टेलीमेट्री साझा करें",
       "description_events": "AnythingLLM अनामित ईवेंट्स की एक छोटी संख्या भेजता है, जैसे \"एक चैट पूरी हुई\" या \"एक उपकरण का उपयोग किया गया\", इसलिए हम देख सकते हैं कि कौन सी सुविधाएँ महत्वपूर्ण हैं और चीजें कहाँ टूटती हैं।",
       "description_privacy": "इसमें कभी भी आपकी चैट्स, दस्तावेज़, प्रॉम्प्ट्स या ऐप का उपयोग करने के बारे में कुछ भी विशिष्ट नहीं शामिल है। कोई खाता नहीं है और कुछ भी आपकी पहचान नहीं करता है।",
-      "description_opt_out": "इसे चालू रखना हमें एक बेहतर एप्लिकेशन बनाने में मदद करता है। आप इसे किसी भी समय बंद कर सकते हैं और आगे कुछ भी नहीं भेजा जाएगा।"
+      "description_opt_out": "इसे चालू रखना हमें एक बेहतर एप्लिकेशन बनाने में मदद करता है। आप इसे किसी भी समय बंद कर सकते हैं और आगे कुछ भी नहीं भेजा जाएगा।",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "मॉडल चयन",
@@ -170,7 +174,10 @@
       "llm_model": "LLM मॉडल",
       "provider_settings": "प्रदाता सेटिंग्स",
       "show_less": "कम दिखाएँ",
-      "view_more": "अधिक देखें"
+      "view_more": "अधिक देखें",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "आधार URL",
@@ -844,6 +851,10 @@
   },
   "models": {
     "recommended": "अनुशंसित",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "स्मृति में फिट नहीं हो सकता है",
       "tight_compact": "फिट नहीं हो सकता है",
@@ -1065,7 +1076,14 @@
     "storage_low": "स्टोरेज कम! मॉडल {{modelSize}} > {{freeSpace}} मुक्त",
     "storage_check_failed": "स्टोरेज जाँच करने में विफल",
     "setup_failed_title": "डाउनलोड सेटअप विफल",
-    "setup_failed_message": "HF मॉडल डाउनलोड सेटअप करने में विफल: {{error}}"
+    "setup_failed_message": "HF मॉडल डाउनलोड सेटअप करने में विफल: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

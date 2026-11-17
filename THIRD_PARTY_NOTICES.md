@@ -1,9 +1,21 @@
-# Third-party source notices
+# إشعارات المصادر والتراخيص الخارجية
 
 ## AnythingLLM Mobile
 
-This repository includes source code derived from [AnythingLLM Mobile](https://github.com/Mintplex-Labs/anythingllm-mobile), Copyright (c) the upstream contributors, retrieved at commit `fef1fe7f9fdfba7895f68aa2b4d332ae510ddc3`. The upstream project is licensed under **GNU GPL version 3 or later**. See the top-level `LICENSE` file and the upstream license notices retained with the imported source.
+يتضمن هذا المستودع شفرة مشتقة من [AnythingLLM Mobile](https://github.com/Mintplex-Labs/anythingllm-mobile)، عند commit المصدر `fef1fe7f9fdfba7895f68aa2b4d332ae510ddc3`. المشروع الأصلي مرخص بموجب **GNU GPL الإصدار 3 أو أي إصدار أحدث**. راجع ملف [`LICENSE`](LICENSE) وإشعارات الترخيص المنقولة مع المصدر. اسم AnythingLLM باقٍ هنا لإسناد التقنية، بينما اسم التطبيق المركب هو **Shbeeb One**.
 
-The source has been copied for an authorized local integration. Any changes and the combined distribution must comply with GPL-3.0-or-later and preserve applicable notices. Review the license obligations and all dependency licenses before distributing a build.
+## stable-diffusion.cpp وGGML
 
-The upstream Firebase configuration (`google-services.json`), debug keystore, and signing secrets were intentionally not copied. Firebase analytics/crash reporting must not be pointed at the upstream project; any telemetry integration requires a separate explicit configuration and privacy review.
+يتضمن بناء Android محرك [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) عند commit `532d2c15c430a785a712b2d94281f04e733008a4`، بترخيص **MIT**. يتضمن المحرك مكتبة [GGML](https://github.com/leejet/ggml) عند commit `eeda9ec48fc84a3df0bb9dcc19ae9053075a2539`، بترخيص **MIT**. ملفات الرخص الأصلية محفوظة داخل المجلد `third_party/stable-diffusion.cpp` والـsubmodule المتداخل `ggml`؛ يجب الإبقاء عليها عند إعادة التوزيع.
+
+## أوزان Stable Diffusion 1.5
+
+لا تتضمن الشفرة أو APK أوزان نموذج الصورة. يمكن للمستخدم تنزيل ملف `stable-diffusion-v1-5-pruned-emaonly-Q4_0.gguf` من [مستودع second-state على Hugging Face](https://huggingface.co/second-state/stable-diffusion-v1-5-GGUF)، حجمه `1,566,768,416` بايت وبصمة SHA-256 هي `b8944e9fe0b69b36ae1b5bb0185b3a7b8ef14347fe0fa9af6c64c4829022261f`. ترخيص الأوزان **CreativeML OpenRAIL-M** منفصل عن تراخيص الشفرة؛ راجع بطاقة النموذج ونص الترخيص قبل الاستخدام أو المشاركة.
+
+## إعدادات خاصة غير منقولة
+
+لم تُدرج إعدادات Firebase الأصلية (`google-services.json`) ولا مفاتيح توقيع أو أسرار للنشر. تعطيل القياس عن بُعد في هذا البناء لا يمنع اتصالات يختارها المستخدم صراحةً، مثل تنزيل النموذج أو استخدام مزود سحابي.
+
+## ملاحظات إعادة التوزيع
+
+تُعدّل شفرة المصدر المدمجة وتُوزع وفق تراخيصها الخاصة؛ يلزم حفظ الإشعارات المتوافقة. لا يعني ترخيص الشفرة أن أوزان النماذج أو كل الاعتماديات تملك الترخيص نفسه. راجع الرخص الأصلية لكل مكوّن قبل نشر APK أو مشاركة أوزان نموذج.

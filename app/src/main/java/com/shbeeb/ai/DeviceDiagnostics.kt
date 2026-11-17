@@ -51,8 +51,8 @@ internal data class DeviceCheck(
     val supportsVideoEncoder: Boolean
 ) {
     fun toArabicReport(): String = buildString {
-        appendLine("تقرير مصنع الذكاء شبيب — فحص الجهاز")
-        appendLine("إصدار التطبيق: 0.10.3 تجريبي")
+        appendLine("تقرير شبيب ون — فحص الجهاز")
+        appendLine("إصدار التطبيق: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) — تجريبي")
         appendLine("نسخة Android API: $androidApi")
         appendLine("الجهاز: $device")
         appendLine("RAM الكلية التقريبية: $memoryTotalMb ميغابايت")
@@ -90,15 +90,14 @@ internal object DeviceDiagnosticScanner {
         }
         val hasEncoder = MediaCodecList(MediaCodecList.REGULAR_CODECS)
             .findEncoderForFormat(format) != null
-        val model = LocalModelFiles.modelFile(context)
+        val modelSizeBytes = LocalModelFiles.info(context)?.sizeBytes
         return DeviceCheck(
             androidApi = Build.VERSION.SDK_INT,
             device = "${Build.MANUFACTURER} ${Build.MODEL}".take(120),
             memoryTotalMb = memory.totalMem / 1_048_576L,
             memoryFreeMb = memory.availMem / 1_048_576L,
             storageFreeMb = space.availableBytes / 1_048_576L,
-            importedModelMb = if (LocalModelFiles.isInstalled(context))
-                model.length() / 1_048_576L else null,
+            importedModelMb = modelSizeBytes?.div(1_048_576L),
             supportsVideoEncoder = hasEncoder
         )
     }
@@ -113,12 +112,12 @@ private fun DiagnosticRow(label: String, value: String, attention: Boolean = fal
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            label, color = Color(0xFFD5C7EA), fontSize = 12.sp,
+            label, color = OneMuted, fontSize = 12.sp,
             modifier = Modifier.weight(1f)
         )
         Text(
             value,
-            color = if (attention) Color(0xFFF7CB78) else Color.White,
+            color = if (attention) OneAmber else OneInk,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1.2f)
@@ -156,11 +155,11 @@ internal fun DeviceDiagnosticsScreen() {
     ) {
         Text(
             "فحص الجهاز",
-            fontSize = 23.sp, fontWeight = FontWeight.Bold, color = Color(0xFFF7CB78)
+            fontSize = 23.sp, fontWeight = FontWeight.Bold, color = OnePrimary
         )
         Text(
             "نتائج من الجهاز مباشرة، دون اتصال بالإنترنت أو إرسال أي معلومات.",
-            color = Color(0xFFB7C8D8), fontSize = 12.sp
+            color = OneMuted, fontSize = 12.sp
         )
         Button(
             onClick = {
@@ -182,17 +181,17 @@ internal fun DeviceDiagnosticsScreen() {
             enabled = !busy,
             modifier = Modifier.fillMaxWidth()
         ) { Text(if (busy) "جارٍ الفحص..." else "إعادة فحص الجهاز") }
-        if (status.isNotBlank()) Text(status, color = Color(0xFFB7C8D8), fontSize = 12.sp)
+        if (status.isNotBlank()) Text(status, color = OneMuted, fontSize = 12.sp)
         val item = check
         if (item != null) {
             Surface(
-                color = Color(0xFF281845),
+                color = OneSurface,
                 shape = RoundedCornerShape(17.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
                     Text(
-                        "المواصفات", color = Color(0xFFF7CB78),
+                        "المواصفات", color = OnePrimary,
                         fontSize = 17.sp, fontWeight = FontWeight.Bold
                     )
                     DiagnosticRow("الجهاز", item.device)
@@ -214,23 +213,23 @@ internal fun DeviceDiagnosticsScreen() {
                 }
             }
             Surface(
-                color = Color(0xFF23163A),
+                color = OneMint,
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(Modifier.padding(13.dp)) {
-                    Text("ما الذي لم يُفحص بعد؟", color = Color(0xFFF7CB78),
+                    Text("ما الذي لم يُفحص بعد؟", color = OnePrimary,
                         fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         "ردود المحركات، تشغيل النموذج المحلي، الإملاء والصوت، " +
                             "إنشاء الفيديو والصور. دعم H.264 وحده لا يثبت نجاح إنشاء ملف MP4.",
-                        color = Color.White, fontSize = 12.sp
+                        color = OneInk, fontSize = 12.sp
                     )
                 }
             }
             OutlinedButton(
-                onClick = { export.launch("shbeeb-device-check.txt") },
+                onClick = { export.launch("shbeeb-one-device-check.txt") },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("حفظ تقرير الفحص النصي") }
         }

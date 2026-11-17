@@ -152,7 +152,7 @@ internal fun OfflineImageEditor() {
                     }
                 }
                 Button(
-                    onClick = { save.launch("shbeeb-edited.png") },
+                    onClick = { save.launch("shbeeb-one-edited.png") },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("حفظ الصورة المعدلة") }
             }
