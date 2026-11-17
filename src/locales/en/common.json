@@ -174,7 +174,10 @@
       "llm_model": "LLM Model",
       "provider_settings": "Provider Settings",
       "show_less": "Show Less",
-      "view_more": "View More"
+      "view_more": "View More",
+      "shared_library_button": "Choose a GGUF from shared storage",
+      "shared_library_subtitle": "Uses the existing local file without downloading or copying it. Choose a seekable file; removing it from the list does not delete it.",
+      "shared_library_opening": "Opening shared storage…"
     },
     "provider_options": {
       "base_url": "Base URL",
@@ -848,6 +851,10 @@
   },
   "models": {
     "recommended": "Recommended",
+    "shared_storage_badge": "Shared file",
+    "unlink_shared_model": "Unlink",
+    "shared_file_description": "Shared GGUF file; opened in place without making a copy.",
+    "shared_library_name": "Shared model library",
     "memory_fit": {
       "tight": "May not fit in memory",
       "tight_compact": "May not fit",
@@ -1069,7 +1076,14 @@
     "storage_low": "Storage low! Model {{modelSize}} > {{freeSpace}} free",
     "storage_check_failed": "Failed to check storage",
     "setup_failed_title": "Download setup failed",
-    "setup_failed_message": "Failed to set up HF model download: {{error}}"
+    "setup_failed_message": "Failed to set up HF model download: {{error}}",
+    "shared_storage_choice_title": "Where should the model be stored?",
+    "shared_storage_choice_message": "A shared folder lets Shbeeb One and another app use the same GGUF file. Choose app-only storage if you do not want to share this model.",
+    "shared_storage_app_only": "This app only",
+    "shared_storage_choose_folder": "Choose shared folder",
+    "shared_storage_use_folder": "Download to shared folder",
+    "shared_storage_folder_button": "Set shared model folder",
+    "shared_storage_folder_help": "New GGUF downloads can be saved directly to a folder you choose, so other apps can select the same file without a second download."
   },
   "onboarding": {
     "welcome": {

@@ -174,7 +174,10 @@
       "llm_model": "LLM 모델",
       "provider_settings": "제공자 설정",
       "show_less": "더 적게 표시",
-      "view_more": "더 보기"
+      "view_more": "더 보기",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "기본 URL",
@@ -814,6 +817,10 @@
   },
   "models": {
     "recommended": "권장",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "메모리에 맞지 않을 수 있음",
       "tight_compact": "맞지 않을 수 있음",
@@ -1028,7 +1035,14 @@
     "storage_low": "저장소 부족! 모델 {{modelSize}} > {{freeSpace}} 사용 가능",
     "storage_check_failed": "저장소 확인 실패",
     "setup_failed_title": "다운로드 설정 실패",
-    "setup_failed_message": "HF 모델 다운로드 설정 실패: {{error}}"
+    "setup_failed_message": "HF 모델 다운로드 설정 실패: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

@@ -174,7 +174,10 @@
       "llm_model": "LLMモデル",
       "provider_settings": "プロバイダー設定",
       "show_less": "少なく表示",
-      "view_more": "さらに表示"
+      "view_more": "さらに表示",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "ベースURL",
@@ -814,6 +817,10 @@
   },
   "models": {
     "recommended": "推奨",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "メモリに収まらない可能性があります",
       "tight_compact": "収まらない可能性があります",
@@ -1028,7 +1035,14 @@
     "storage_low": "ストレージが少ない! モデル{{modelSize}} > {{freeSpace}}空き",
     "storage_check_failed": "ストレージのチェックに失敗しました",
     "setup_failed_title": "ダウンロードセットアップ失敗",
-    "setup_failed_message": "HFモデルダウンロードのセットアップに失敗しました：{{error}}"
+    "setup_failed_message": "HFモデルダウンロードのセットアップに失敗しました：{{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

@@ -1,6 +1,7 @@
 import uiStore from '@/store/UIStore';
 import { HfGGUFQuant, HfGGUFRepoSummary } from '@/utils/api/hfGguf';
 import i18n from '@/i18n';
+import type { SharedGGUFSelection } from '@/utils/models/sharedModelAccess';
 
 /**
  * GGUF models the user added from Hugging Face (outside of our catalog).
@@ -29,6 +30,10 @@ export type ImportedModel = {
   contextLength?: number;
   /** ISO date the user added it */
   addedAt: string;
+  /** Source of the GGUF. Shared models are referenced by SAF URI, not copied into app storage. */
+  source?: 'huggingface' | 'shared';
+  /** Persistent Android SAF URI, only for a user-selected shared GGUF. */
+  sharedUri?: string;
 };
 
 export const IMPORTED_MODELS_STORAGE_KEY = 'hf_imported_models' as const;
@@ -68,6 +73,33 @@ export function buildImportedModel(repo: HfGGUFRepoSummary, quant: HfGGUFQuant):
     params: repo.params,
     contextLength: repo.contextLength,
     addedAt: new Date().toISOString(),
+    source: 'huggingface',
+  };
+}
+
+function stableUriHash(value: string): string {
+  let hash = 0;
+  for (let index = 0; index < value.length; index++) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 4_294_967_291;
+  }
+  return Math.floor(hash).toString(16).padStart(8, '0');
+}
+
+export function buildSharedModel(file: SharedGGUFSelection): ImportedModel {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.gguf$/i, '') || 'model';
+  return {
+    modelId: `shared/${safeName}-${stableUriHash(file.uri)}.gguf`,
+    repoId: '',
+    filename: file.name,
+    quant: null,
+    name: file.name.replace(/\.gguf$/i, ''),
+    description: i18n.t('models.shared_file_description'),
+    size: file.sizeBytes,
+    downloadUrl: '',
+    author: i18n.t('models.shared_library_name'),
+    addedAt: new Date().toISOString(),
+    source: 'shared',
+    sharedUri: file.uri,
   };
 }
 
@@ -80,6 +112,11 @@ const ImportedModels = {
   async has(modelId: string): Promise<boolean> {
     const models = await ImportedModels.list();
     return models.some(m => m.modelId === modelId);
+  },
+
+  async find(modelId: string): Promise<ImportedModel | null> {
+    const models = await ImportedModels.list();
+    return models.find(model => model.modelId === modelId) ?? null;
   },
 
   /** Adds (or replaces) an imported model definition. */

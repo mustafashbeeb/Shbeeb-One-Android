@@ -174,7 +174,10 @@
       "llm_model": "LLM 模型",
       "provider_settings": "提供商设置",
       "show_less": "显示较少",
-      "view_more": "查看更多"
+      "view_more": "查看更多",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "基础 URL",
@@ -814,6 +817,10 @@
   },
   "models": {
     "recommended": "推荐",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "可能无法装入内存",
       "tight_compact": "可能无法装入",
@@ -1028,7 +1035,14 @@
     "storage_low": "存储空间不足！模型 {{modelSize}} > {{freeSpace}} 可用",
     "storage_check_failed": "检查存储失败",
     "setup_failed_title": "下载设置失败",
-    "setup_failed_message": "无法设置 HF 模型下载：{{error}}"
+    "setup_failed_message": "无法设置 HF 模型下载：{{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

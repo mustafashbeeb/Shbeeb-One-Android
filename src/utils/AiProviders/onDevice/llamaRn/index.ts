@@ -17,6 +17,9 @@ import ContextCompactor, { type CompactionChatMessage, truncateMiddle } from '@/
 import { throwIfAborted } from '@/utils/chat/abort';
 import { ChatMemoryEstimate, enableAllocationLogging, estimateChatMemory, readGgufShape } from '@/utils/models/memoryEstimate';
 import Telemetry from '@/utils/Telemetry';
+import { closeSharedGGUF, openSharedGGUF } from '@/utils/models/sharedModelAccess';
+import ImportedModels from '@/utils/models/imported';
+import SharedModelLocations from '@/utils/models/sharedLocations';
 
 export type NativeLlamaChatMessage = {
   role: string;
@@ -94,6 +97,8 @@ export default class LlamaRnWrapper {
   private parent: OnDeviceProvider;
   private model: string;
   private ggufFilePath: string | null = null;
+  private sharedModelToken: string | null = null;
+  private ggufPathResolution: Promise<string> | null = null;
   private context: LlamaContext | null = null;
   /**
    * Serialises every native call on `context` (completion, tokenize, getFormattedChat) AND its release.
@@ -295,7 +300,33 @@ export default class LlamaRnWrapper {
     this.ggufFilePath = `${RNFS.DocumentDirectoryPath}/models/gguf/${this.modelDefinition.ggufFilePath}`;
   }
 
-  async determineGgufFilePath() {
+  async determineGgufFilePath(): Promise<string> {
+    if (this.sharedModelToken && this.ggufFilePath) return this.ggufFilePath;
+    if (this.ggufPathResolution) return this.ggufPathResolution;
+    const pending = this.resolveGgufFilePath();
+    this.ggufPathResolution = pending;
+    try {
+      return await pending;
+    } finally {
+      if (this.ggufPathResolution === pending) this.ggufPathResolution = null;
+    }
+  }
+
+  private async resolveGgufFilePath(): Promise<string> {
+    const imported = await ImportedModels.find(this.model);
+    const sharedLocation = imported?.source === 'shared'
+      ? null
+      : await SharedModelLocations.find(this.model);
+    const sharedUri = imported?.source === 'shared' ? imported.sharedUri : sharedLocation?.uri;
+    if (sharedUri) {
+      if (this.sharedModelToken && this.ggufFilePath) return this.ggufFilePath;
+      const opened = await openSharedGGUF(sharedUri);
+      this.ggufFilePath = opened.path;
+      this.sharedModelToken = opened.token;
+      this.log(`GGUF opened in-place from the shared SAF library (${opened.sizeBytes} bytes)`);
+      return opened.path;
+    }
+
     if (!this.ggufFilePath) {
       this.log('GGUF file location is not yet set - will find a gguf file in the model directory.');
       let path = `${RNFS.DocumentDirectoryPath}/models/gguf/${this.model}`;
@@ -304,7 +335,7 @@ export default class LlamaRnWrapper {
         if (await RNFS.exists(path)) {
           this.ggufFilePath = path;
           this.log(`GGUF file found at ${this.ggufFilePath}`);
-          return this.ggufFilePath;
+          return path;
         } else {
           this.log(`GGUF file not found at ${path} - trying to find via subdir`);
           path = path.split('/').slice(0, -1).join('/');
@@ -317,6 +348,7 @@ export default class LlamaRnWrapper {
       if (!ggufFile) throw new Error(`LlamaRnWrapper::ggufFilePath: No gguf file found for model ${this.model}`);
       this.ggufFilePath = `${path}/${ggufFile.name}`;
     }
+    if (!this.ggufFilePath) throw new Error(`LlamaRnWrapper::ggufFilePath: No GGUF path resolved for model ${this.model}`);
     return this.ggufFilePath;
   }
 
@@ -353,6 +385,11 @@ export default class LlamaRnWrapper {
         });
         return true;
       } catch (error) {
+        if (this.sharedModelToken) {
+          await closeSharedGGUF(this.sharedModelToken).catch(closeError => this.log('Failed to close shared GGUF after load failure', closeError));
+          this.sharedModelToken = null;
+          this.ggufFilePath = null;
+        }
         console.error('Failed to initialize model:', error);
         throw error;
       } finally {
@@ -751,7 +788,10 @@ export default class LlamaRnWrapper {
       clearTimeout(this.keepAliveTimer);
       this.keepAliveTimer = null;
     }
-    if (!this.context) return;
+    if (!this.context) {
+      await this.closeSharedModelDescriptor();
+      return;
+    }
     this.log('Unloading model');
     const context = this.context;
     this.context = null;
@@ -760,6 +800,16 @@ export default class LlamaRnWrapper {
       await context.releaseMultimodal().catch((e) => this.log('Failed to release vision projector', e));
     }
     await context.release();
+    await this.closeSharedModelDescriptor();
+  }
+
+  /** Close the SAF descriptor only after llama.cpp has released the context/mmap. */
+  private async closeSharedModelDescriptor(): Promise<void> {
+    if (!this.sharedModelToken) return;
+    const token = this.sharedModelToken;
+    this.sharedModelToken = null;
+    await closeSharedGGUF(token).catch(error => this.log('Failed to close shared GGUF descriptor', error));
+    this.ggufFilePath = null;
   }
 
   async cleanup(): Promise<void> {

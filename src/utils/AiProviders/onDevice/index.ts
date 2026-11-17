@@ -9,7 +9,8 @@ import * as RNFS from '@dr.pogodin/react-native-fs';
 import Workspace from "@/database/models/Workspace";
 import { DynamicChatMessage } from "@/screens/WorkspaceChat/ChatHistory";
 import ToolsManager from "@/utils/ToolsManager";
-import ImportedModels, { describeImportedModel } from "@/utils/models/imported";
+import ImportedModels, { describeImportedModel } from '@/utils/models/imported';
+import SharedModelLocations from '@/utils/models/sharedLocations';
 import i18n from "@/i18n";
 import { throwIfAborted } from "@/utils/chat/abort";
 import { type Model } from "@/utils/types";
@@ -24,6 +25,7 @@ export type IOnDeviceAvailableModel = {
   description: string;
   size: number | string;
   downloadUrl: string;
+  isDownloaded?: boolean;
   isPreset: boolean;
   /** Display name of the organisation behind the model (Google, IBM Research, ...). Used to group lists. */
   provider?: string;
@@ -31,6 +33,10 @@ export type IOnDeviceAvailableModel = {
   isUnknown?: boolean;
   /** True when the user added this model from Hugging Face (see `utils/models/imported`) */
   isImported?: boolean;
+  /** True when GGUF is accessed in-place through a persisted Android SAF document URI. */
+  isShared?: boolean;
+  /** SAF document URI for a user-selected shared GGUF; never a local filesystem path. */
+  sharedUri?: string;
   imageUrl?: string | null;
   /** Vision projector that must be downloaded next to the model for image input - catalog models only. */
   mmproj?: Model['mmproj'];
@@ -223,6 +229,13 @@ export default class OnDeviceProvider extends BaseOpenAILikeProvider {
 
   // @ts-ignore
   override async availableModels(): Promise<IOnDeviceAvailableModel[]> {
+    const sharedLocations = await SharedModelLocations.list();
+    const markShared = (model: IOnDeviceAvailableModel): IOnDeviceAvailableModel => {
+      const location = sharedLocations.find(item => item.modelId === model.modelId);
+      return location
+        ? { ...model, isShared: true, sharedUri: location.uri, size: location.sizeBytes }
+        : model;
+    };
     // Presets alias a catalog entry (same modelId + url). Prefer the catalog's exact byte
     // count over the preset's display string so memory-fit badges and the download
     // confirmation work from the same number.
@@ -258,15 +271,19 @@ export default class OnDeviceProvider extends BaseOpenAILikeProvider {
       id: m.modelId,
       modelId: m.modelId,
       name: m.name,
-      description: m.repoId ? describeImportedModel(m) : m.description,
+      description: m.source === 'shared'
+        ? i18n.t('models.shared_file_description')
+        : m.repoId ? describeImportedModel(m) : m.description,
       size: m.size,
       downloadUrl: m.downloadUrl,
       isPreset: false,
       isImported: true,
-      provider: m.author,
+      isShared: m.source === 'shared' && !!m.sharedUri,
+      sharedUri: m.sharedUri,
+      provider: m.source === 'shared' ? i18n.t('models.shared_library_name') : m.author,
       imageUrl: null,
     }));
-    const knownModels = [...basicModels, ...crossPlatformModels, ...importedModels];
+    const knownModels = [...basicModels, ...crossPlatformModels].map(markShared).concat(importedModels);
     const unknownModels = await this.discoverUnknownStoredModels(knownModels.map(m => m.modelId));
     return [
       ...knownModels,

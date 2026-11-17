@@ -174,7 +174,10 @@
       "llm_model": "Модель LLM",
       "provider_settings": "Параметры поставщика",
       "show_less": "Показать меньше",
-      "view_more": "Показать больше"
+      "view_more": "Показать больше",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "Базовый URL",
@@ -916,6 +919,10 @@
   },
   "models": {
     "recommended": "Рекомендуется",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Может не поместиться в памяти",
       "tight_compact": "Может не поместиться",
@@ -1151,7 +1158,14 @@
     "storage_low": "Хранилище заполнено! Модель {{modelSize}} > {{freeSpace}} свободно",
     "storage_check_failed": "Не удалось проверить хранилище",
     "setup_failed_title": "Ошибка при настройке загрузки",
-    "setup_failed_message": "Ошибка при настройке загрузки модели HF: {{error}}"
+    "setup_failed_message": "Ошибка при настройке загрузки модели HF: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

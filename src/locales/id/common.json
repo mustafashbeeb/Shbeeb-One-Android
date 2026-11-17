@@ -174,7 +174,10 @@
       "llm_model": "Model LLM",
       "provider_settings": "Pengaturan Penyedia",
       "show_less": "Tampilkan Lebih Sedikit",
-      "view_more": "Tampilkan Lebih Banyak"
+      "view_more": "Tampilkan Lebih Banyak",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "URL Dasar",
@@ -814,6 +817,10 @@
   },
   "models": {
     "recommended": "Direkomendasikan",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Mungkin tidak sesuai di memori",
       "tight_compact": "Mungkin tidak sesuai",
@@ -1028,7 +1035,14 @@
     "storage_low": "Penyimpanan rendah! Model {{modelSize}} > {{freeSpace}} gratis",
     "storage_check_failed": "Gagal memeriksa penyimpanan",
     "setup_failed_title": "Pengaturan unduhan gagal",
-    "setup_failed_message": "Gagal mengatur unduhan model HF: {{error}}"
+    "setup_failed_message": "Gagal mengatur unduhan model HF: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {

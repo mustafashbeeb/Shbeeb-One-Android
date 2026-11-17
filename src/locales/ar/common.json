@@ -174,7 +174,10 @@
       "llm_model": "نموذج LLM",
       "provider_settings": "إعدادات المزوّد",
       "show_less": "عرض أقل",
-      "view_more": "عرض المزيد"
+      "view_more": "عرض المزيد",
+      "shared_library_button": "اختيار GGUF من المكتبة المشتركة",
+      "shared_library_subtitle": "يستخدم الملف المحلي نفسه دون تنزيله أو نسخه. اختر ملفاً قابلاً للبحث؛ إزالة المرجع لا تحذف الملف.",
+      "shared_library_opening": "جارٍ فتح المكتبة المشتركة…"
     },
     "provider_options": {
       "base_url": "URL الأساسي",
@@ -984,6 +987,10 @@
   },
   "models": {
     "recommended": "موصى به",
+    "shared_storage_badge": "ملف مشترك",
+    "unlink_shared_model": "إزالة المرجع",
+    "shared_file_description": "ملف GGUF مشترك؛ يُفتح من موقعه مباشرةً دون إنشاء نسخة.",
+    "shared_library_name": "مكتبة النماذج المشتركة",
     "memory_fit": {
       "tight": "قد لا تكفي الذاكرة",
       "tight_compact": "قد لا يتسع",
@@ -1233,7 +1240,14 @@
     "storage_low": "مساحة التخزين منخفضة! حجم النموذج {{modelSize}} > المساحة المتاحة {{freeSpace}}",
     "storage_check_failed": "تعذّر التحقق من مساحة التخزين",
     "setup_failed_title": "فشل إعداد التنزيل",
-    "setup_failed_message": "تعذّر إعداد تنزيل نموذج HF: {{error}}"
+    "setup_failed_message": "تعذّر إعداد تنزيل نموذج HF: {{error}}",
+    "shared_storage_choice_title": "أين تريد حفظ النموذج؟",
+    "shared_storage_choice_message": "يتيح المجلد المشترك لشبيب One وتطبيق آخر استخدام ملف GGUF نفسه. اختر التخزين الخاص بالتطبيق إذا لم ترغب بمشاركة النموذج.",
+    "shared_storage_app_only": "هذا التطبيق فقط",
+    "shared_storage_choose_folder": "اختيار مجلد مشترك",
+    "shared_storage_use_folder": "التنزيل إلى المجلد المشترك",
+    "shared_storage_folder_button": "تحديد مجلد النماذج المشترك",
+    "shared_storage_folder_help": "يمكن حفظ تنزيلات GGUF الجديدة مباشرةً في مجلد تختاره، ليستخدم التطبيق الآخر الملف نفسه دون تنزيله مرة ثانية."
   },
   "onboarding": {
     "welcome": {

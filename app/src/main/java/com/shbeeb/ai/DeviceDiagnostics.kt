@@ -90,15 +90,14 @@ internal object DeviceDiagnosticScanner {
         }
         val hasEncoder = MediaCodecList(MediaCodecList.REGULAR_CODECS)
             .findEncoderForFormat(format) != null
-        val model = LocalModelFiles.modelFile(context)
+        val modelSizeBytes = LocalModelFiles.info(context)?.sizeBytes
         return DeviceCheck(
             androidApi = Build.VERSION.SDK_INT,
             device = "${Build.MANUFACTURER} ${Build.MODEL}".take(120),
             memoryTotalMb = memory.totalMem / 1_048_576L,
             memoryFreeMb = memory.availMem / 1_048_576L,
             storageFreeMb = space.availableBytes / 1_048_576L,
-            importedModelMb = if (LocalModelFiles.isInstalled(context))
-                model.length() / 1_048_576L else null,
+            importedModelMb = modelSizeBytes?.div(1_048_576L),
             supportsVideoEncoder = hasEncoder
         )
     }

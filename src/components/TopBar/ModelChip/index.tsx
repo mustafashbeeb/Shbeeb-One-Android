@@ -280,6 +280,8 @@ export interface AvailableModel {
   provider?: string;
   isUnknown?: boolean;
   isImported?: boolean;
+  isShared?: boolean;
+  sharedUri?: string;
   imageUrl?: string | null;
 }
 

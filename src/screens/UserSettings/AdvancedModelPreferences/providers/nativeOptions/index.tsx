@@ -1,5 +1,5 @@
 import useModelManager from '@/hooks/useModelManager';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ModelCard from '@/components/ModelCard';
 import { groupModelsByProvider, ProviderSectionHeader } from '@/components/ModelCard/ProviderSections';
@@ -9,7 +9,8 @@ import { resolveDestinationPathFromGGUFUrl } from '@/utils/models/defaults';
 import * as RNFS from '@dr.pogodin/react-native-fs';
 import HuggingFaceImport from '@/components/HuggingFaceImport';
 import AddFromHuggingFaceCard from '@/components/HuggingFaceImport/AddCard';
-import ImportedModels, { ImportedModel } from '@/utils/models/imported';
+import ImportedModels, { buildSharedModel, ImportedModel } from '@/utils/models/imported';
+import { pickSharedGGUF, pickSharedModelFolder } from '@/utils/models/sharedModelAccess';
 import useModelFit from '@/hooks/useModelFit';
 import { consumePendingHfPull, PendingHfPull } from '@/utils/DeepLinks';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +30,7 @@ export default function NativeOptions({
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [showAllModels, setShowAllModels] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [sharedModelBusy, setSharedModelBusy] = useState(false);
   // Set when the picker was opened by an anythingllm://pull-hf link: the repo to show and the file to highlight.
   const [importPull, setImportPull] = useState<PendingHfPull | null>(null);
   const {
@@ -45,6 +47,10 @@ export default function NativeOptions({
     if (LLMProvider) {
       const models = await (LLMProvider as OnDeviceProvider).availableModels();
       for (const model of models) {
+        if (model.isShared) {
+          model.isDownloaded = true;
+          continue;
+        }
         // @ts-ignore
         const path = resolveDestinationPathFromGGUFUrl(model.downloadUrl);
         // @ts-ignore
@@ -106,6 +112,44 @@ export default function NativeOptions({
     return removed;
   };
 
+  const handleSelectModel = async (model: any) => {
+    const selected = await downloadModel(model);
+    if (selected) await fetchModels();
+    return selected;
+  };
+
+  const addSharedModel = async () => {
+    if (sharedModelBusy) return;
+    setSharedModelBusy(true);
+    try {
+      const selected = await pickSharedGGUF();
+      if (!selected) return;
+      await ImportedModels.add(buildSharedModel(selected));
+      await fetchModels();
+      setShowAllModels(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      Alert.alert('تعذّر إضافة النموذج', message);
+    } finally {
+      setSharedModelBusy(false);
+    }
+  };
+
+  const configureSharedFolder = async () => {
+    try {
+      const folderUri = await pickSharedModelFolder();
+      if (folderUri) {
+        Alert.alert(
+          t('downloads.shared_storage_folder_button'),
+          t('downloads.shared_storage_folder_help'),
+        );
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      Alert.alert('تعذّر حفظ المجلد', message);
+    }
+  };
+
   // Always show the currently selected model, even when it is not a preset,
   // so a model found in storage that is no longer in our list is still visible.
   // Models the user added from Hugging Face are always shown too.
@@ -134,13 +178,34 @@ export default function NativeOptions({
               downloadProgress={downloadProgress}
               memoryFit={fitFor(model)}
               isRecommended={model.id === recommendedId}
-              onSelect={() => downloadModel(model)}
+              onSelect={() => handleSelectModel(model)}
               onUninstall={() => handleUninstall(model)}
               onCancelDownload={cancelDownload}
             />
           ))}
         </Fragment>
       ))}
+      <TouchableOpacity
+        disabled={sharedModelBusy}
+        onPress={addSharedModel}
+        className="mx-3 my-2 rounded-xl border border-[#35D6FF] bg-[#102634] px-4 py-3">
+        <Text className="text-[#35D6FF] text-base font-semibold">
+          {sharedModelBusy ? t('settings.advanced_model_preferences.shared_library_opening') : t('settings.advanced_model_preferences.shared_library_button')}
+        </Text>
+        <Text className="text-[#B7C8D8] text-xs mt-1">
+          {t('settings.advanced_model_preferences.shared_library_subtitle')}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={configureSharedFolder}
+        className="mx-3 mb-3 rounded-xl border border-[#31485A] bg-[#0B1722] px-4 py-3">
+        <Text className="text-white text-sm font-semibold">
+          {t('downloads.shared_storage_folder_button')}
+        </Text>
+        <Text className="text-[#93A9BA] text-xs mt-1">
+          {t('downloads.shared_storage_folder_help')}
+        </Text>
+      </TouchableOpacity>
       {availableModels.length > 0 && (
         <TouchableOpacity
           onPress={() => setShowAllModels(!showAllModels)}

@@ -174,7 +174,10 @@
       "llm_model": "LLM Model",
       "provider_settings": "Provider-instellingen",
       "show_less": "Minder weergeven",
-      "view_more": "Meer weergeven"
+      "view_more": "Meer weergeven",
+      "shared_library_button": null,
+      "shared_library_subtitle": null,
+      "shared_library_opening": null
     },
     "provider_options": {
       "base_url": "Basis-URL",
@@ -848,6 +851,10 @@
   },
   "models": {
     "recommended": "Aanbevolen",
+    "shared_storage_badge": null,
+    "unlink_shared_model": null,
+    "shared_file_description": null,
+    "shared_library_name": null,
     "memory_fit": {
       "tight": "Mogelijk niet in geheugen",
       "tight_compact": "Mogelijk niet geschikt",
@@ -1069,7 +1076,14 @@
     "storage_low": "Opslag laag! Model {{modelSize}} > {{freeSpace}} vrij",
     "storage_check_failed": "Opslagcontrole mislukt",
     "setup_failed_title": "Download-setup mislukt",
-    "setup_failed_message": "Kon HF-modeldownload niet instellen: {{error}}"
+    "setup_failed_message": "Kon HF-modeldownload niet instellen: {{error}}",
+    "shared_storage_choice_title": null,
+    "shared_storage_choice_message": null,
+    "shared_storage_app_only": null,
+    "shared_storage_choose_folder": null,
+    "shared_storage_use_folder": null,
+    "shared_storage_folder_button": null,
+    "shared_storage_folder_help": null
   },
   "onboarding": {
     "welcome": {
