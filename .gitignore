@@ -21,9 +21,9 @@ secrets.properties
 *.env
 .env
 # Never commit downloaded models or private user data
-models/
+/models/
 *.gguf
 *.safetensors
-user_data/
+/user_data/
 # llama.rn copies these generated Hexagon libraries from node_modules during builds.
 app/src/main/assets/ggml-hexagon/
