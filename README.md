@@ -2,7 +2,7 @@
 
 نسخة تجريبية تجمع تطبيق **Shbeeb AI** العربي (Kotlin/Jetpack Compose) مع **AnythingLLM Mobile** (React Native) داخل مشروع Android واحد. تظل شاشة Shbeeb هي شاشة التشغيل؛ ومن صفحتها الرئيسية يمكن فتح تجربة AnythingLLM المدمجة.
 
-> **الحالة: تجريبية وغير جاهزة للنشر.** لم يكتمل بناء APK والتحقق منه على جهاز Android حتى الآن. إنشاء المستودع لا يعني اعتماد الميزات أو سلامتها للإصدار.
+> **الحالة: تجريبية وغير جاهزة للنشر.** يتطلب اختباراً فعلياً على جهاز Android قبل اعتماد الميزات أو سلامتها للإصدار.
 
 ## ما يتضمنه المشروع
 
@@ -20,23 +20,20 @@
 - ميزة تحديد الموقع الشبكي معطلة، ولا ترسل IP إلى خدمة خارجية.
 - استخدام مزود نموذج سحابي أو خادم يختاره المستخدم يرسل الطلبات إلى ذلك المزود. أما الاستدلال المحلي فيتطلب نموذجاً متوافقاً يختاره المستخدم.
 
-## بناء نسخة Debug على Android
+## بناء APK مستقل للتجربة على Android
 
 المتطلبات الحالية: JDK 17 أو أحدث (اختُبر إعداد البناء على JDK 21)، Node.js 20.19.5، Yarn Classic 1.22.22، Android SDK Platform 36، Build Tools 36.0.0، NDK 27.1.12297006 وCMake 3.22.1. إعدادات Android المحلية مثل `local.properties` يجب أن تبقى خارج Git.
 
 ```bash
 yarn install --frozen-lockfile
-# الطرفية الأولى
-yarn start
-# الطرفية الثانية
-./gradlew :app:assembleDebug
+./gradlew :app:assembleRelease
 ```
 
-للتثبيت على جهاز متصل مع تفعيل USB debugging، استخدم `yarn android`. يقتصر ABI المهيأ حالياً على `arm64-v8a`. لم يُضبط توقيع Release، ولا تُضمّن أوزان نموذج محلي في APK.
+الناتج `app/build/outputs/apk/release/app-release.apk` يتضمن JavaScript bundle، لذلك لا يحتاج Metro ولا اتصالاً بالكمبيوتر. لأغراض الاختبار فقط، تستخدم هذه البنية مفتاح Android debug الافتراضي؛ لا تستخدمها للنشر التجاري. إذا أردت التطوير الحي عبر Metro، شغّل `yarn start` وثبّت نسخة Debug منفصلة. يقتصر ABI المهيأ حالياً على `arm64-v8a`، ولا تُضمّن أوزان نموذج محلي في APK.
 
 ## تحقق التطوير
 
-بعد تجهيز البيئة، نفّذ `yarn typecheck`, `yarn test --runInBand`, `yarn lint`, ثم أوامر Gradle أعلاه. ملفات CI موجودة في `.github/workflows/android.yml`. سيُحدّث هذا المستودع حالة البناء عند إتمام التحقق على GitHub Actions.
+بعد تجهيز البيئة، نفّذ `yarn typecheck`, `yarn test --runInBand`, `yarn lint`, ثم أمر Gradle أعلاه. ملفات CI موجودة في `.github/workflows/android.yml` وتبني APK مستقلاً وترفعه ضمن artifact باسم `anythingllm-and-shbeeb-standalone-package`.
 
 ## تنبيهات قبل النشر
 

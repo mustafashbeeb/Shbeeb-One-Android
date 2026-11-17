@@ -61,43 +61,45 @@ jobs:
       - name: Run Android tests and lint
         run: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug
 
-      - name: Build debug APK
-        run: ./gradlew --no-daemon :app:assembleDebug
+      - name: Build standalone release APK
+        run: ./gradlew --no-daemon :app:assembleRelease
 
-      - name: Package install ZIP
+      - name: Package standalone install ZIP
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
           import zipfile
 
-          apk = Path("app/build/outputs/apk/debug/app-debug.apk")
+          apk = Path("app/build/outputs/apk/release/app-release.apk")
           digest = hashlib.sha256()
           with apk.open("rb") as stream:
               for chunk in iter(lambda: stream.read(1024 * 1024), b""):
                   digest.update(chunk)
 
-          install = """Shbeeb AI + AnythingLLM — حزمة تجريبية
+          install = """Shbeeb AI + AnythingLLM — APK مستقل للتجربة
 
           1. فك ضغط هذا الملف.
-          2. ثبّت app-debug.apk على جهاز Android.
-          3. هذه نسخة Debug للتجربة وليست إصداراً إنتاجياً. قد تحتاج إلى إزالة نسخة موقعة بمفتاح مختلف قبل التثبيت.
-          4. تحقّق من SHA256SUMS.txt عند نقل الملف.
+          2. ثبّت app-release.apk على جهاز Android.
+          3. هذه حزمة اختبار موقعة بمفتاح Android debug الافتراضي، وليست إصداراً للنشر التجاري.
+          4. تحتوي الحزمة JavaScript داخل APK ولا تحتاج إلى خادم Metro.
+          5. إذا ظهر تعارض توقيع مع نسخة سابقة، احفظ بياناتك أولاً ثم أزل النسخة السابقة.
+          6. تحقّق من SHA256SUMS.txt عند نقل الملف.
           """
-          package = apk.parent / "anythingllm-and-shbeeb-debug.zip"
+          package = apk.parent / "anythingllm-and-shbeeb-standalone.zip"
           with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_STORED) as archive:
-              archive.write(apk, "app-debug.apk")
+              archive.write(apk, "app-release.apk")
               archive.writestr("INSTALL_AR.txt", install.encode("utf-8"))
-              archive.writestr("SHA256SUMS.txt", f"{digest.hexdigest()}  app-debug.apk\n")
+              archive.writestr("SHA256SUMS.txt", f"{digest.hexdigest()}  app-release.apk\n")
           print(f"Created {package} ({package.stat().st_size} bytes)")
           PY
 
-      - name: Upload debug package artifact
+      - name: Upload standalone test package artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: anythingllm-and-shbeeb-debug-package
+          name: anythingllm-and-shbeeb-standalone-package
           path: |
-            app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/debug/anythingllm-and-shbeeb-debug.zip
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/release/anythingllm-and-shbeeb-standalone.zip
           if-no-files-found: error

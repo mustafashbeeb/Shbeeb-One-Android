@@ -59,7 +59,9 @@ android {
 
     buildTypes {
         getByName("release") {
-            // Release signing is intentionally not configured; never reuse upstream signing material.
+            // Test-only signing so the standalone APK can be installed directly.
+            // This is not a production signing key; maintainers must configure their own key to publish.
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
         }
     }
@@ -129,4 +131,12 @@ tasks.matching {
     it.name.endsWith("LintReportModel") || it.name.startsWith("lintAnalyze")
 }.configureEach {
     dependsOn("copyReactNativeVectorIconFonts")
+}
+
+// The release JS bundle scans the project root, where llama.rn syncs HTP assets.
+// Ensure those generated files are ready first to avoid Gradle implicit-dependency failures.
+tasks.matching {
+    it.name.startsWith("createBundle") && it.name.endsWith("JsAndAssets")
+}.configureEach {
+    dependsOn("syncRNLlamaHtpAssets")
 }
