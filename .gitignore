@@ -3,7 +3,7 @@
 .kotlin/
 build/
 **/build/
-node_modules/
+node_modules
 .metro-health-check*
 .react-native/
 local.properties
@@ -25,5 +25,7 @@ secrets.properties
 *.gguf
 *.safetensors
 /user_data/
+# ObjectBox generator output created during local kapt builds.
+/app/objectbox-models/
 # llama.rn copies these generated Hexagon libraries from node_modules during builds.
 app/src/main/assets/ggml-hexagon/

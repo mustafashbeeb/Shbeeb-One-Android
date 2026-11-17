@@ -64,10 +64,40 @@ jobs:
       - name: Build debug APK
         run: ./gradlew --no-daemon :app:assembleDebug
 
-      - name: Upload APK artifact
+      - name: Package install ZIP
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import zipfile
+
+          apk = Path("app/build/outputs/apk/debug/app-debug.apk")
+          digest = hashlib.sha256()
+          with apk.open("rb") as stream:
+              for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                  digest.update(chunk)
+
+          install = """Shbeeb AI + AnythingLLM — حزمة تجريبية
+
+          1. فك ضغط هذا الملف.
+          2. ثبّت app-debug.apk على جهاز Android.
+          3. هذه نسخة Debug للتجربة وليست إصداراً إنتاجياً. قد تحتاج إلى إزالة نسخة موقعة بمفتاح مختلف قبل التثبيت.
+          4. تحقّق من SHA256SUMS.txt عند نقل الملف.
+          """
+          package = apk.parent / "anythingllm-and-shbeeb-debug.zip"
+          with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_STORED) as archive:
+              archive.write(apk, "app-debug.apk")
+              archive.writestr("INSTALL_AR.txt", install.encode("utf-8"))
+              archive.writestr("SHA256SUMS.txt", f"{digest.hexdigest()}  app-debug.apk\n")
+          print(f"Created {package} ({package.stat().st_size} bytes)")
+          PY
+
+      - name: Upload debug package artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: anythingllm-and-shbeeb-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: anythingllm-and-shbeeb-debug-package
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/debug/anythingllm-and-shbeeb-debug.zip
           if-no-files-found: error

@@ -98,7 +98,18 @@ dependencies {
     testImplementation("org.json:json:20250517")
 }
 
+// Room 2.8.5's processor brings kotlin-metadata-jvm 2.2.0, which cannot read
+// Kotlin 2.4 metadata present in the dependency classpath. Keep this override KAPT-only.
+configurations.configureEach {
+    if (name.startsWith("kapt")) {
+        resolutionStrategy.force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.21")
+    }
+}
+
 kotlin {
+    // LiteRT-LM 0.18.0 ships Java 21 bytecode; compile with JDK 21 while
+    // retaining Java 17 bytecode for Android runtime compatibility.
+    jvmToolchain(21)
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
@@ -112,3 +123,10 @@ project.extensions.extraProperties.set(
     )
 )
 apply(from = file("../node_modules/react-native-vector-icons/fonts.gradle"))
+
+// The fonts Gradle script writes resources consumed by lint model generation and analysis.
+tasks.matching {
+    it.name.endsWith("LintReportModel") || it.name.startsWith("lintAnalyze")
+}.configureEach {
+    dependsOn("copyReactNativeVectorIconFonts")
+}

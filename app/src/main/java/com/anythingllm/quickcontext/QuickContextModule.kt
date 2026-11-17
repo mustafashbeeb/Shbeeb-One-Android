@@ -3,7 +3,7 @@ package com.anythingllm.quickcontext
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.anythingllm.MainActivity
+import com.anythingllm.AnythingActivity
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -37,7 +37,7 @@ class QuickContextModule(private val reactContext: ReactApplicationContext) : Re
     @ReactMethod
     fun openInApp() {
         val activity = card()
-        val intent = Intent(reactContext, MainActivity::class.java).apply {
+        val intent = Intent(reactContext, AnythingActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
         }
         reactContext.startActivity(intent)

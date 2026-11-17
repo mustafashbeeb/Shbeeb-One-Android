@@ -8,7 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.service.voice.VoiceInteractionService
-import com.anythingllm.MainActivity
+import com.anythingllm.AnythingActivity
 import com.anythingllm.assistant.themes.AssistantThemes
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -149,7 +149,7 @@ class AssistantModule(private val reactContext: ReactApplicationContext) : React
     @ReactMethod
     fun openInApp() {
         val activity = overlay()
-        val intent = Intent(reactContext, MainActivity::class.java).apply {
+        val intent = Intent(reactContext, AnythingActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
         }
         reactContext.startActivity(intent)

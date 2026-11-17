@@ -3,7 +3,7 @@ package com.anythingllm.quickcontext
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import com.anythingllm.R
+import com.shbeeb.ai.R
 import com.anythingllm.SharedHostReactActivityDelegate
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
