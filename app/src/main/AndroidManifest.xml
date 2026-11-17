@@ -69,7 +69,7 @@
 
         <activity
             android:name="com.anythingllm.AnythingActivity"
-            android:label="شبيب AI · AnythingLLM"
+            android:label="شبيب ون · AnythingLLM"
             android:theme="@style/AppTheme"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:screenOrientation="portrait"

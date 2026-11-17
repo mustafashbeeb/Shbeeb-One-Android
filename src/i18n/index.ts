@@ -67,11 +67,25 @@ export function detectDeviceLanguage(): string {
   return FALLBACK_LANGUAGE;
 }
 
+/** React Native applies forced layout direction after the next app restart. */
+function applyLanguageDirection(language: string): boolean {
+  const manager = I18nManager as typeof I18nManager | undefined;
+  if (!manager) return false;
+  const desiredRTL = language === "ar";
+  const directionChanged = manager.isRTL !== desiredRTL;
+  if (typeof manager.allowRTL === "function") manager.allowRTL(true);
+  if (directionChanged && typeof manager.forceRTL === "function") manager.forceRTL(desiredRTL);
+  return directionChanged;
+}
+
+const initialLanguage = detectDeviceLanguage();
+applyLanguageDirection(initialLanguage);
+
 i18n.use(initReactI18next).init({
   // Language files hold null for untranslated entries, which the Resource type does not model.
   resources: resources as unknown as Resource,
   defaultNS,
-  lng: detectDeviceLanguage(),
+  lng: initialLanguage,
   fallbackLng: FALLBACK_LANGUAGE,
   // Untranslated entries are null (or empty) in a language file - show the English string instead.
   returnNull: false,
@@ -86,6 +100,7 @@ export function hydrateLanguage(): Promise<void> {
   if (!hydration) {
     hydration = AsyncStorage.getItem(STORAGE_KEY)
       .then(async saved => {
+        applyLanguageDirection(saved && saved in resources ? saved : i18n.language);
         if (saved && saved in resources && saved !== i18n.language)
           await i18n.changeLanguage(saved);
       })
@@ -97,8 +112,10 @@ export function hydrateLanguage(): Promise<void> {
 /** Switch the UI language and remember it across launches. */
 export async function setLanguage(code: string) {
   if (!(code in resources)) throw new Error(`Unsupported language: ${code}`);
+  const directionChanged = applyLanguageDirection(code);
   await AsyncStorage.setItem(STORAGE_KEY, code);
   await i18n.changeLanguage(code);
+  return directionChanged;
 }
 
 /**

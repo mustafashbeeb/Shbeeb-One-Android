@@ -51,7 +51,7 @@ internal data class DeviceCheck(
     val supportsVideoEncoder: Boolean
 ) {
     fun toArabicReport(): String = buildString {
-        appendLine("تقرير مصنع الذكاء شبيب — فحص الجهاز")
+        appendLine("تقرير شبيب ون — فحص الجهاز")
         appendLine("إصدار التطبيق: 0.10.3 تجريبي")
         appendLine("نسخة Android API: $androidApi")
         appendLine("الجهاز: $device")
@@ -230,7 +230,7 @@ internal fun DeviceDiagnosticsScreen() {
                 }
             }
             OutlinedButton(
-                onClick = { export.launch("shbeeb-device-check.txt") },
+                onClick = { export.launch("shbeeb-one-device-check.txt") },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("حفظ تقرير الفحص النصي") }
         }

@@ -65,7 +65,8 @@
     "title": "语言",
     "search_placeholder": "搜索语言",
     "no_results": "没有语言匹配\"{{query}}\"",
-    "changed": "语言已更改为{{language}}"
+    "changed": "语言已更改为{{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "分享匿名遥测",
       "description_events": "AnythingLLM 发送少量匿名事件，例如\"完成了一次聊天\"或\"使用了一个工具\"，以便我们可以看到哪些功能重要，以及在哪些地方出现了问题。",
       "description_privacy": "这永远不包括您的聊天、文档、提示或有关您如何使用应用程序的任何特定信息。没有帐户，也没有任何可以识别您的信息。",
-      "description_opt_out": "保持这个启用可以帮助我们构建更好的应用程序。您可以随时关闭它，不会有任何进一步的信息被发送。"
+      "description_opt_out": "保持这个启用可以帮助我们构建更好的应用程序。您可以随时关闭它，不会有任何进一步的信息被发送。",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "模型选择",

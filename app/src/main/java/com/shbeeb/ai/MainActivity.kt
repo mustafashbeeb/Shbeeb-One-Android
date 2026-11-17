@@ -520,14 +520,14 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
         }
         Spacer(Modifier.height(22.dp))
         Text(
-            "مصنع الذكاء شبيب",
+            "شبيب ون",
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 29.sp,
             textAlign = TextAlign.Center
         )
         Text(
-            "SHBEEB AI",
+            "SHBEEB ONE",
             color = Gold,
             fontWeight = FontWeight.Bold,
             fontSize = 17.sp
@@ -565,7 +565,7 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
         }
         Spacer(Modifier.height(28.dp))
         Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
-            Text("الدخول إلى المصنع", fontWeight = FontWeight.Bold)
+            Text("دخول شبيب ون", fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(14.dp))
         Text(
@@ -586,8 +586,8 @@ private fun Header(goHome: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             LogoMark(Modifier.clickable(onClick = goHome))
             Column(Modifier.weight(1f)) {
-                Text("مصنع الذكاء شبيب", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold, maxLines = 1)
-                Text("SHBEEB AI  •  إصدار 0.10.7 تجريبي", color = Blue, fontSize = 11.sp)
+                Text("شبيب ون", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+                Text("SHBEEB ONE  •  إصدار ${BuildConfig.VERSION_NAME} تجريبي", color = Blue, fontSize = 11.sp)
             }
             Text("✦", color = Blue, fontSize = 18.sp)
         }
@@ -990,7 +990,7 @@ private fun AssistantScreen(
             runCatching {
                 context.contentResolver.openOutputStream(uri)?.use { stream ->
                     OutputStreamWriter(stream, Charsets.UTF_8).use { writer ->
-                        writer.write("SHBEEB AI — ${engine.title}\n\n")
+                        writer.write("SHBEEB ONE — ${engine.title}\n\n")
                         messages.forEach { line ->
                             writer.write("${if (line.role == "user") "أنت" else engine.title}: ${line.text}\n\n")
                         }
@@ -1113,7 +1113,7 @@ private fun AssistantScreen(
                 modifier = Modifier.weight(1f)
             ) { Text("🎙 إملاء", fontSize = 12.sp) }
             TextButton(
-                onClick = { exportLauncher.launch("shbeeb-${engine.id}-chat.txt") },
+                onClick = { exportLauncher.launch("shbeeb-one-${engine.id}-chat.txt") },
                 enabled = messages.isNotEmpty() && !busy,
                 modifier = Modifier.weight(1f)
             ) { Text("تصدير", fontSize = 12.sp) }

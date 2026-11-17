@@ -327,7 +327,7 @@ internal fun CreativeScreen(kind: String, hasOpenAiKey: Boolean, readOpenAiKey: 
             }
             OutlinedButton(onClick = {
                 val manager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                manager.setPrimaryClip(ClipData.newPlainText("SHBEEB AI prompt", result))
+                manager.setPrimaryClip(ClipData.newPlainText("SHBEEB ONE prompt", result))
                 copied = true
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(if (copied) "تم النسخ" else "نسخ البرومبت")
@@ -338,7 +338,8 @@ internal fun CreativeScreen(kind: String, hasOpenAiKey: Boolean, readOpenAiKey: 
         }
         if (!video && kind == "الصور") {
             OfflineImageEditor()
-            Text("توليد صورة حقيقية (اختياري)", color = ToolGold,
+            LocalImageGenerationControls(promptSource = if (result.isBlank()) idea else result)
+            Text("توليد سحابي اختياري عبر OpenAI", color = ToolGold,
                 fontWeight = FontWeight.Bold, fontSize = 17.sp)
             if (!hasOpenAiKey) {
                 Text("أدخل مفتاح OpenAI API من إعدادات التطبيق لتفعيل التوليد السحابي.",
@@ -365,7 +366,7 @@ internal fun CreativeScreen(kind: String, hasOpenAiKey: Boolean, readOpenAiKey: 
                     contentScale = ContentScale.Fit
                 )
                 Button(
-                    onClick = { saveImage.launch("shbeeb-image.png") },
+                    onClick = { saveImage.launch("shbeeb-one-image.png") },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("حفظ الصورة PNG على الهاتف") }
             }

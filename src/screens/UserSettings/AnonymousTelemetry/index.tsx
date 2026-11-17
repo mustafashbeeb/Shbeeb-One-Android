@@ -45,14 +45,14 @@ export default function AnonymousTelemetry({ goToPage }: AnonymousTelemetryProps
           <View className="flex flex-col rounded-lg" style={{ backgroundColor: '#1B1B1E', padding: 14, gap: 12 }}>
             <View className="flex flex-row items-center" style={{ gap: 10 }}>
               <ChartBar size={20} color="#7FE7FF" />
-              <Text className="text-white text-lg">القياس عن بُعد معطّل</Text>
+              <Text className="text-white text-lg">{t('settings.telemetry.disabled_title')}</Text>
             </View>
             <Text style={{ color: '#B7C8D8' }} className="text-sm">
-              لا تُرسل هذه النسخة أحداث الاستخدام أو تقارير الأعطال إلى خوادم AnythingLLM أو Firebase.
+              {t('settings.telemetry.disabled_body')}
             </Text>
           </View>
           <Text style={{ color: '#B7C8D8' }} className="text-sm">
-            المحادثة المحلية تعمل على الجهاز بعد استيراد نموذج. إذا اخترت محركاً سحابياً، يُرسل نص الطلب إلى مزود ذلك المحرك عند ضغط إرسال، وفق الإعدادات التي اخترتها.
+            {t('settings.telemetry.privacy_note')}
           </Text>
         </View>
       </ScrollView>

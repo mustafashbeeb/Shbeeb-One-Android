@@ -65,7 +65,8 @@
     "title": "Bahasa",
     "search_placeholder": "Cari bahasa",
     "no_results": "Tidak ada bahasa yang cocok \"{{query}}\"",
-    "changed": "Bahasa diubah ke {{language}}"
+    "changed": "Bahasa diubah ke {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Bagikan telemetri anonim",
       "description_events": "AnythingLLM mengirim sejumlah kecil acara anonim, seperti \"obrolan selesai\" atau \"alat digunakan\", sehingga kami dapat melihat fitur mana yang penting dan di mana hal-hal rusak.",
       "description_privacy": "Ini tidak pernah mencakup obrolan, dokumen, prompt, atau apa pun yang spesifik tentang cara Anda menggunakan aplikasi. Tidak ada akun dan tidak ada yang mengidentifikasi Anda.",
-      "description_opt_out": "Membiarkan ini tetap aktif membantu kami membangun aplikasi yang lebih baik. Anda dapat mematikannya kapan saja dan tidak ada yang akan dikirim lagi."
+      "description_opt_out": "Membiarkan ini tetap aktif membantu kami membangun aplikasi yang lebih baik. Anda dapat mematikannya kapan saja dan tidak ada yang akan dikirim lagi.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Pemilihan Model",

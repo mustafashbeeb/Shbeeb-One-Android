@@ -65,7 +65,8 @@
     "title": "Idioma",
     "search_placeholder": "Pesquisar idiomas",
     "no_results": "Nenhum idioma corresponde a \"{{query}}\"",
-    "changed": "Idioma alterado para {{language}}"
+    "changed": "Idioma alterado para {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Compartilhar telemetria anônima",
       "description_events": "AnythingLLM envia um pequeno número de eventos anônimos, como \"um chat foi concluído\" ou \"uma ferramenta foi usada\", para vermos quais recursos importam e onde as coisas quebram.",
       "description_privacy": "Isso nunca inclui seus chats, documentos, prompts ou nada específico sobre como você usa o aplicativo. Não há conta e nada que o identifique.",
-      "description_opt_out": "Deixar isso ativado nos ajuda a construir um aplicativo melhor. Você pode desativar a qualquer momento e nada mais será enviado."
+      "description_opt_out": "Deixar isso ativado nos ajuda a construir um aplicativo melhor. Você pode desativar a qualquer momento e nada mais será enviado.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Seleção de Modelo",

@@ -65,7 +65,8 @@
     "title": "Dil",
     "search_placeholder": "Dilleri ara",
     "no_results": "\"{{query}}\" ile eşleşen dil yok",
-    "changed": "Dil {{language}} olarak değiştirildi"
+    "changed": "Dil {{language}} olarak değiştirildi",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Anonim telemetri paylaş",
       "description_events": "AnythingLLM, \"bir sohbet tamamlandı\" veya \"bir araç kullanıldı\" gibi az sayıda anonim etkinlik gönderir, böylece hangi özelliklerin önemli olduğunu ve nerede bir sorun olduğunu görebiliriz.",
       "description_privacy": "Bu hiçbir zaman sohbetlerinizi, belgelerinizi, istemlerinizi veya uygulamayı nasıl kullandığınız hakkında herhangi bir özel şey içermez. Hiçbir hesap yok ve sizi tanımlayan hiçbir şey yok.",
-      "description_opt_out": "Bunu açık tutmak daha iyi bir uygulama oluşturmamıza yardımcı olur. İstediğiniz zaman kapatabilirsiniz ve başka hiçbir şey gönderilmeyecektir."
+      "description_opt_out": "Bunu açık tutmak daha iyi bir uygulama oluşturmamıza yardımcı olur. İstediğiniz zaman kapatabilirsiniz ve başka hiçbir şey gönderilmeyecektir.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Model Seçimi",

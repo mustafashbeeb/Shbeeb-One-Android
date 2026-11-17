@@ -44,8 +44,11 @@ export default function LanguageSettings({ goToPage }: LanguageSettingsProps) {
 
   async function choose(lang: Language) {
     if (lang.code !== active) {
-      await setLanguage(lang.code);
-      showToast(t('language.changed', { language: lang.nativeName }));
+      const directionChanged = await setLanguage(lang.code);
+      const changed = t('language.changed', { language: lang.nativeName });
+      showToast(
+        directionChanged ? `${changed} ${t('language.restart_required')}` : changed,
+      );
     }
     goBack();
   }

@@ -16,5 +16,5 @@ export const PATHS = {
 
   connect_to_instance: 'ConnectToInstance',
 
-  github_new_issue: 'https://github.com/mustafashbeeb/Shbeeb-AI/issues/new',
+  github_new_issue: 'https://github.com/mustafashbeeb/Shbeeb-One-Android/issues/new',
 };

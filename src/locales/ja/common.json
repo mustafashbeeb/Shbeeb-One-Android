@@ -65,7 +65,8 @@
     "title": "言語",
     "search_placeholder": "言語を検索",
     "no_results": "「{{query}}」に一致する言語がありません",
-    "changed": "言語が{{language}}に変更されました"
+    "changed": "言語が{{language}}に変更されました",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "匿名テレメトリを共有",
       "description_events": "AnythingLLMは「チャットが完了した」や「ツールが使用された」などの小数の匿名イベントを送信し、どの機能が重要であり、どこで問題が発生しているかを確認できます。",
       "description_privacy": "これはチャット、ドキュメント、プロンプト、またはアプリの使用方法に関する具体的な情報を含みません。アカウントはなく、あなたを特定するものは何もありません。",
-      "description_opt_out": "これをオンのままにすると、より良いアプリケーションの構築に役立ちます。いつでも無効にでき、それ以上何も送信されません。"
+      "description_opt_out": "これをオンのままにすると、より良いアプリケーションの構築に役立ちます。いつでも無効にでき、それ以上何も送信されません。",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "モデル選択",

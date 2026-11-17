@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 
-/** Hosts the upstream AnythingLLM React Native app inside the Shbeeb application. */
+/** Hosts the upstream AnythingLLM React Native app inside the Shbeeb One application. */
 class AnythingActivity : ReactActivity() {
     override fun getMainComponentName(): String = "AnythingLLM"
 

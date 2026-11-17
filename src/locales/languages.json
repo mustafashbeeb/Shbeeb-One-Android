@@ -1,5 +1,6 @@
 [
   { "code": "en", "nativeName": "English", "englishName": "English" },
+  { "code": "ar", "nativeName": "العربية", "englishName": "Arabic" },
   { "code": "de", "nativeName": "Deutsch", "englishName": "German" },
   { "code": "es", "nativeName": "Español", "englishName": "Spanish" },
   { "code": "fr", "nativeName": "Français", "englishName": "French" },

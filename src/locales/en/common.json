@@ -65,7 +65,8 @@
     "title": "Language",
     "search_placeholder": "Search languages",
     "no_results": "No languages match \"{{query}}\"",
-    "changed": "Language changed to {{language}}"
+    "changed": "Language changed to {{language}}",
+    "restart_required": "Restart the app to apply the new layout direction."
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Share anonymous telemetry",
       "description_events": "AnythingLLM sends a small number of anonymous events, such as \"a chat was completed\" or \"a tool was used\", so we can see which features matter and where things break.",
       "description_privacy": "This never includes your chats, documents, prompts, or anything specific about how you use the app. There is no account and nothing that identifies you.",
-      "description_opt_out": "Leaving this on helps us build a better application. You can turn it off at any time and nothing further will be sent."
+      "description_opt_out": "Leaving this on helps us build a better application. You can turn it off at any time and nothing further will be sent.",
+      "disabled_title": "Telemetry is disabled in this build",
+      "disabled_body": "This build sends no analytics events or crash reports to AnythingLLM or Firebase.",
+      "privacy_note": "On-device inference runs locally. If you choose a cloud provider, your prompt is sent to that provider when you press Send."
     },
     "advanced_model_preferences": {
       "title": "Model Selection",
@@ -707,7 +711,7 @@
     },
     "get_location": {
       "name": "Get Location",
-      "description": "Location lookup is disabled in this Shbeeb build; IP-derived location is not sent to an external service.",
+      "description": "Location lookup is disabled in this Shbeeb One build; IP-derived location is not sent to an external service.",
       "status_looking_up": "Looking up your approximate location"
     },
     "summarize": {
@@ -738,7 +742,7 @@
     },
     "web_search": {
       "name": "Web Search",
-      "description": "Search the web using You.com. This tool is off by default; enabling it sends your query to that external provider. The AnythingLLM-hosted fallback is disabled in this Shbeeb build.",
+      "description": "Search the web using You.com. This tool is off by default; enabling it sends your query to that external provider. The AnythingLLM-hosted fallback is disabled in this Shbeeb One build.",
       "status_searching": "Searching the web for \"{{query}}\"",
       "status_reviewing_one": "Reviewing {{count}} search result",
       "status_reviewing_other": "Reviewing {{count}} search results"

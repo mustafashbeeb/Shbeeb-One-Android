@@ -65,7 +65,8 @@
     "title": "Taal",
     "search_placeholder": "Talen zoeken",
     "no_results": "Geen talen gevonden die overeenkomen met \"{{query}}\"",
-    "changed": "Taal gewijzigd naar {{language}}"
+    "changed": "Taal gewijzigd naar {{language}}",
+    "restart_required": null
   },
   "settings": {
     "llm_preference": {
@@ -162,7 +163,10 @@
       "share_toggle": "Anonieme telemetrie delen",
       "description_events": "AnythingLLM verzendt een klein aantal anonieme gebeurtenissen, zoals \"een chat werd voltooid\" of \"een hulpmiddel werd gebruikt\", zodat we kunnen zien welke functies belangrijk zijn en waar dingen kapot gaan.",
       "description_privacy": "Dit omvat nooit je chats, documenten, prompts of iets specifieks over hoe je de app gebruikt. Er is geen account en niets wat jou identificeert.",
-      "description_opt_out": "Als je dit aanzet, help je ons een betere applicatie te bouwen. Je kunt het op elk moment uitschakelen en er zal niets meer worden verzonden."
+      "description_opt_out": "Als je dit aanzet, help je ons een betere applicatie te bouwen. Je kunt het op elk moment uitschakelen en er zal niets meer worden verzonden.",
+      "disabled_title": null,
+      "disabled_body": null,
+      "privacy_note": null
     },
     "advanced_model_preferences": {
       "title": "Modelselectie",

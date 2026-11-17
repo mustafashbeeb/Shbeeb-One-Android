@@ -24,16 +24,35 @@ android {
         applicationId = "com.shbeeb.ai"
         minSdk = 26
         targetSdk = 35
-        versionCode = 17
-        versionName = "0.10.7"
+        versionCode = 18
+        versionName = "0.11.0"
         ndk {
             abiFilters.add("arm64-v8a")
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-std=c++17"
+                arguments += listOf(
+                    "-DSD_BUILD_EXAMPLES=OFF",
+                    "-DSD_OPENCL=OFF",
+                    "-DSD_WEBP=OFF",
+                    "-DSD_WEBM=OFF",
+                    "-DGGML_OPENMP=OFF"
+                )
+            }
         }
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 
     compileOptions {

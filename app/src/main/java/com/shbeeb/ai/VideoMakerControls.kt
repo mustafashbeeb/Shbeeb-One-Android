@@ -104,7 +104,7 @@ internal fun VideoMakerControls() {
                     if (!busy && input != null) {
                         busy = true
                         message = "جارٍ معالجة مقطع 8 ثوانٍ محلياً. لا تغلق التطبيق أثناء المعالجة."
-                        val file = File(context.cacheDir, "shbeeb-local-clip.mp4")
+                        val file = File(context.cacheDir, "shbeeb-one-local-clip.mp4")
                         Thread {
                             val response = runCatching { LocalVideoMaker.render(input, file); file }
                             handler.post {
@@ -123,7 +123,7 @@ internal fun VideoMakerControls() {
             ) { Text(if (busy) "جارٍ تجهيز الفيديو…" else "إنشاء فيديو 8 ثوانٍ") }
             if (outputFile != null && !busy) {
                 OutlinedButton(
-                    onClick = { saveMp4.launch("shbeeb-8sec.mp4") },
+                    onClick = { saveMp4.launch("shbeeb-one-8sec.mp4") },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("حفظ المقطع MP4") }
             }
