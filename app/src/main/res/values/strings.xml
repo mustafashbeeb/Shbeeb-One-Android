@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مصنع الذكاء شبيب</string>
+    <string name="quick_actions_action">اسأل شبيب AI</string>
+    <string name="quick_actions_empty_hint">حدد نصاً أولاً.</string>
+</resources>

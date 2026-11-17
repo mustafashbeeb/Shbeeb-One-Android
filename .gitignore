@@ -1,0 +1,29 @@
+# Android & Gradle
+.gradle/
+.kotlin/
+build/
+**/build/
+node_modules/
+.metro-health-check*
+.react-native/
+local.properties
+*.iml
+.idea/
+.DS_Store
+*.log
+captures/
+.externalNativeBuild/
+.cxx/
+# Credentials / signing
+*.jks
+*.keystore
+secrets.properties
+*.env
+.env
+# Never commit downloaded models or private user data
+models/
+*.gguf
+*.safetensors
+user_data/
+# llama.rn copies these generated Hexagon libraries from node_modules during builds.
+app/src/main/assets/ggml-hexagon/

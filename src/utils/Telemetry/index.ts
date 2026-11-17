@@ -1,0 +1,126 @@
+/** Telemetry is intentionally disabled in the Shbeeb integration. */
+
+/**
+ * Telemetry class for logging events to Firebase Analytics
+ * There are custom events and standard events
+ * Predefined events: https://rnfirebase.io/analytics/usage#predefined-events
+ * Reserved events: https://rnfirebase.io/analytics/usage#reserved-events
+ */
+class Telemetry {
+    private static instance: Telemetry;
+
+    /**
+     * Custom events are events that are not predefined by Firebase Analytics
+     * We set them here so it is easier to manage and track them across the app
+     */
+    CUSTOM_EVENTS = {
+        ONBOARDING: {
+            COMPLETED: 'onboarding_completed',
+            SURVEY_RESPONSE: 'onboarding_survey_response',
+        },
+        ACTIONS: {
+            WORKSPACE_CREATED: 'workspace_created',
+            CHAT_COMPLETED: 'chat_completed',
+            /** The user pressed stop while a reply was generating - nothing was saved */
+            CHAT_ABORTED: 'chat_aborted',
+            /** A document was attached to a workspace (payload: documentType, mode = embedded | full) */
+            DOCUMENT_IMPORTED: 'document_added',
+            /** An image was attached to a prompt from the gallery, the camera or the share sheet (payload: source) */
+            IMAGE_ATTACHED: 'image_attached',
+            /** Another app shared files/images to AnythingLLM through the share sheet (payload: files, images) */
+            CONTENT_SHARED: 'content_shared',
+            /** An anythingllm://pull-hf link (Hugging Face "Use this model") opened the on-device picker (payload: repo, hasFile) */
+            HF_PULL_LINK_OPENED: 'hf_pull_link_opened',
+            /** Text highlighted in another app was sent to the Quick Actions card (payload: mode, action) */
+            QUICK_CONTEXT_USED: 'quick_context_used',
+            /** The selection-toolbar entry was switched on or off in Settings > Special tools (payload: enabled) */
+            QUICK_CONTEXT_TOGGLED: 'quick_context_toggled',
+            /** "Set up" / "Change" in Settings > Device Assistant, which opens Android's assistant settings (payload: alreadyDefault) */
+            ASSISTANT_SETUP_OPENED: 'assistant_setup_opened',
+            /** The assist gesture opened the assistant overlay */
+            ASSISTANT_INVOKED: 'assistant_invoked',
+            /** A prompt was sent from the assistant overlay (payload: screenshot, voice, followUp) */
+            ASSISTANT_CHAT_SENT: 'assistant_chat_sent',
+            /** An assistant behavior was switched in Settings > Assistant (payload: preference, enabled) */
+            ASSISTANT_PREFERENCE_TOGGLED: 'assistant_preference_toggled',
+            /** A background theme was picked in Settings > Assistant (payload: theme) */
+            ASSISTANT_THEME_CHANGED: 'assistant_theme_changed',
+            TOOL_CALLED: 'tool_called',
+            /** The user switched a tool on from the tools sheet (payload: tool, provider) - disabling and suggestion-chip toggles are not tracked */
+            TOOL_ENABLED: 'tool_enabled',
+            LLM_SETTINGS_UPDATED: 'llm_settings_updated',
+            /** A chat thread was exported (txt/md/json/pdf) and handed to the share sheet */
+            THREAD_EXPORTED: 'thread_exported',
+            /** A chat thread was forked into a new thread with a copy of its history */
+            THREAD_FORKED: 'thread_forked',
+            /** A user/assistant message pair was deleted from a thread */
+            CHAT_DELETED: 'chat_deleted',
+            /** A user/assistant message pair was removed and its prompt re-submitted */
+            CHAT_RETRIED: 'chat_retried',
+            /** The user switched the memory system on (disabling is not tracked) */
+            MEMORIES_ENABLED: 'memories_enabled',
+            /** The user saved a memory from the thread menu (payload: scope) */
+            MEMORY_SAVED: 'memory_saved',
+            /** A scheduled job was created (payload: tools count, notify) */
+            SCHEDULED_JOB_CREATED: 'scheduled_job_created',
+            SCHEDULED_JOB_RAN: 'scheduled_job_ran',
+            /** The user approved a reminder from chat (payload: kind alarm|timer|calendar) */
+            REMINDER_SET: 'reminder_set',
+            /** The feature highlights carousel was dismissed (payload: audience new_user|upgrade, cards) */
+            HIGHLIGHTS_VIEWED: 'highlights_viewed',
+
+            /** The user use the QR code to connect to an AnythingLLM intance */
+            EXTERNAL_CONNECTION_ESTABLISHED: 'external_connection_established',
+            /** External workspace imported from the AnythingLLM Desktop */
+            EXTERNAL_WORKSPACE_IMPORTED: 'external_workspace_imported',
+        },
+        /** The user switched anonymous telemetry off - the final event we send before going quiet */
+        DISABLED_TELEMETRY: 'disabled_telemetry',
+    } as const;
+
+    constructor() {
+        if (Telemetry.instance) return Telemetry.instance;
+        Telemetry.instance = this;
+    }
+
+    log(message: any, ...args: any[]) {
+        console.log(`\x1b[32m[Telemetry]\x1b[0m`, message, ...args)
+    }
+
+    /** Event names remain for compatibility, but no analytics data leaves the device. */
+    logEvent(_name: string, _params: Record<string, any> = {}) {
+        return;
+    }
+
+    /** Keep errors local; do not upload crash details to the upstream Firebase project. */
+    recordError(error: Error, context?: string) {
+        if (__DEV__) console.error('[Local error]', context ?? '', error);
+    }
+
+    async trackNativeModelLoad<T>(
+        _kind: string,
+        _path: string,
+        _details: Record<string, string | number | boolean>,
+        load: () => Promise<T>,
+    ): Promise<T> {
+        return load();
+    }
+
+    /** Whether anonymous telemetry is currently on. Resolves once the stored setting has been read. */
+    async isEnabled(): Promise<boolean> {
+        return false;
+    }
+
+    /**
+     * Turn anonymous telemetry on or off and persist the choice.
+     * Disabling sends one last `DISABLED_TELEMETRY` event so we can count opt-outs, then stops
+     * Firebase analytics and crash report collection; every later `logEvent` call returns early.
+     */
+    async setEnabled(enabled: boolean): Promise<void> {
+        // Intentionally no-op: telemetry cannot be enabled in this integrated build.
+        void enabled;
+    }
+}
+
+const telemetry = new Telemetry();
+export default telemetry;
